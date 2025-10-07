@@ -5,6 +5,7 @@
 class HttpConnection : public std::enable_shared_from_this<HttpConnection>
 {
 public:
+    friend class LogicSystem;
     HttpConnection(tcp::socket socket);
 
     void start();
@@ -12,6 +13,7 @@ public:
 private:
     void checkDeadLine();
     void writeResponse();
+    void handleReq();
 
     tcp::socket socket_;
     beast::flat_buffer buffer_{8192};
