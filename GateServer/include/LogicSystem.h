@@ -11,7 +11,10 @@ class LogicSystem : public Singleton<LogicSystem>
 public:
     ~LogicSystem() = default;
     bool handleGet(std::string url, std::shared_ptr<HttpConnection> con);
+    bool handlePost(std::string url, std::shared_ptr<HttpConnection> con);
+
     void reqGet(std::string url, HttpHandler handler);
+    void reqPost(std::string url, HttpHandler handler);
 
 private:
     friend class Singleton<LogicSystem>;

@@ -14,6 +14,7 @@ private:
     void checkDeadLine();
     void writeResponse();
     void handleReq();
+    void preParseGetParam();
 
     tcp::socket socket_;
     beast::flat_buffer buffer_{8192};
@@ -21,4 +22,7 @@ private:
     http::response<http::dynamic_body> response_;
     net::steady_timer deadline_{socket_.get_executor(),
                                 std::chrono::seconds(60)};
+
+    std::string getUrl_;
+    std::unordered_map<std::string, std::string> getParams_;
 };
