@@ -23,11 +23,11 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
 RegisterDialog::~RegisterDialog() { delete ui; }
 
-void RegisterDialog::onGetCodeClicked()
+void RegisterDialog::on_getCode_clicked()
 {
     // 获取用户输入的文本
     auto email = ui->emailEdit->text();
-    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\W+))+)");
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
     bool match = regex.match(email).hasMatch();
     if (match)
     {
@@ -35,7 +35,7 @@ void RegisterDialog::onGetCodeClicked()
         QJsonObject jsonObj;
         jsonObj["email"] = email;
         HttpMgr::getInstance_()->postHttpReq(
-            QUrl("http://localhost:8080/get_varifycode"), jsonObj,
+            QUrl(gateUrlPrefix + "/get_varifycode"), jsonObj,
             ReqId::ID_GET_VARIFY_CODE, Modules::REGISTERMOD);
     }
     else
@@ -67,10 +67,10 @@ void RegisterDialog::slotRegModFinish(ReqId id, QString res, ErrorCodes err)
     }
 
     // 成功的话转为json对象
-    jsonDoc.object();
+    QJsonObject jsonObj = jsonDoc.object();
 
     // 回调函数处理转换成功的json
-    handlers_[id](jsonDoc.object());
+    handlers_[id](jsonObj);
 
     return;
 }
@@ -96,13 +96,13 @@ void RegisterDialog::initHttpHandlers()
 
 void RegisterDialog::showTip(QString str, bool bOk)
 {
-    if (bOk)
+    if (!bOk)
     {
-        ui->errTip->setProperty("state", "normal");
+        ui->errTip->setProperty("state", "err");
     }
     else
     {
-        ui->errTip->setProperty("state", "err");
+        ui->errTip->setProperty("state", "normal");
     }
     ui->errTip->setText(str);
 

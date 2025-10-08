@@ -4,5 +4,6 @@
         <file>res/login.png</file>
         <file>res/logo.png</file>
         <file>style/stylesheet.qss</file>
+        <file>config.ini</file>
     </qresource>
 </RCC>

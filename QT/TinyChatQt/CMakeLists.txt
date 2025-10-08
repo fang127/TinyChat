@@ -67,3 +67,13 @@ set_target_properties(TinyChatQt PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(TinyChatQt)
 endif()
+
+# Copy config.ini into the target runtime directory after build so the
+# executable can read configuration from the same folder as the binary.
+# This is cross-platform (uses CMake -E) and works with multi-config generators
+# because $<TARGET_FILE_DIR:...> expands to the config-specific output folder.
+add_custom_command(TARGET TinyChatQt POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/config.ini
+        $<TARGET_FILE_DIR:TinyChatQt>/config.ini
+)

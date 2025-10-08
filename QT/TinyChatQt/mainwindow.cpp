@@ -12,8 +12,7 @@
  *****************************************************************************/
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     // 加载登录界面
@@ -21,20 +20,20 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(loginDialog_);
     // loginDialog_->show();
     // 创建和注册消息链接
-    connect(loginDialog_,&LoginDialog::switchRegister,this,&MainWindow::slotSwitchReg);
+    connect(loginDialog_, &LoginDialog::switchRegister, this,
+            &MainWindow::slotSwitchReg);
 
     registerDialog_ = new RegisterDialog(this);
 
-    registerDialog_->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
-    loginDialog_->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
+    registerDialog_->setWindowFlags(Qt::CustomizeWindowHint |
+                                    Qt::FramelessWindowHint);
+    loginDialog_->setWindowFlags(Qt::CustomizeWindowHint |
+                                 Qt::FramelessWindowHint);
 
     registerDialog_->hide();
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::slotSwitchReg()
 {
@@ -42,4 +41,3 @@ void MainWindow::slotSwitchReg()
     loginDialog_->hide();
     registerDialog_->show();
 }
-

@@ -2,26 +2,29 @@
 #define HTTPMGR_H
 
 #include "singleton.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QObject>
 #include <QString>
 #include <QUrl>
-#include <QObject>
 #include <QtNetwork/QNetworkAccessManager>
-#include <QJsonObject>
-#include <QJsonDocument>
 
-class HttpMgr : public QObject, public Singleton<HttpMgr>,public std::enable_shared_from_this<HttpMgr>
+class HttpMgr : public QObject,
+                public Singleton<HttpMgr>,
+                public std::enable_shared_from_this<HttpMgr>
 {
     Q_OBJECT
 public:
     ~HttpMgr();
+
+    void postHttpReq(QUrl url, QJsonObject json, ReqId reqId, Modules mod);
+
 private:
     friend class Singleton<HttpMgr>;
 
     HttpMgr();
 
     QNetworkAccessManager manager_; // http管理者
-
-    void postHttpReq(QUrl url, QJsonObject json, ReqId reqId, Modules mod);
 
 private slots:
     void slotHttpFinish(ReqId id, QString res, ErrorCodes err, Modules mod);
