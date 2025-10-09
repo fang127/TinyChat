@@ -2,9 +2,14 @@
 
 #include "Singleton.h"
 
+#include <atomic>
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/http.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <condition_variable>
 #include <functional>
 #include <iostream>
 #include <jsoncpp/json/json.h>
@@ -12,6 +17,9 @@
 #include <jsoncpp/json/value.h>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <queue>
+#include <string>
 #include <unordered_map>
 
 namespace beast = boost::beast;   // from <boost/beast.hpp>
@@ -25,3 +33,6 @@ enum ErrorCodes
     ErrorJson = 1001,
     RPCFailed = 1002,
 };
+
+class ConfigMgr;
+extern ConfigMgr gCfgMgr;

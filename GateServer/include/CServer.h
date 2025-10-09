@@ -1,6 +1,6 @@
 #pragma once
 
-#include "const.h"
+#include "Const.h"
 
 class CServer : public std::enable_shared_from_this<CServer>
 {
@@ -12,5 +12,4 @@ public:
 private:
     tcp::acceptor acceptor_;
     net::io_context &ioc_;
-    tcp::socket socket_;
 };

@@ -1,14 +1,16 @@
 #pragma once
 
-#include "const.h"
+#include "Const.h"
 
 class HttpConnection : public std::enable_shared_from_this<HttpConnection>
 {
 public:
     friend class LogicSystem;
-    HttpConnection(tcp::socket socket);
+    HttpConnection(boost::asio::io_context &ioc);
 
     void start();
+
+    tcp::socket &getSocket() { return socket_; }
 
 private:
     void checkDeadLine();
