@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Singleton.h"
 
 #include <boost/asio.hpp>

@@ -16,3 +16,6 @@
 ### day06
 - 学习饿汉模式和c++11之后的懒汉单例模式
 - 使用std::thread构建一个asioIOServicePool,实现多线程处理事件，one loop one thread，主线程只负责accept
+### day07
+- 构建连接池，实现GateServer和VerifyGrpcClient
+- 复习多线程编程中的thread,mutex,lock_guard,unique_lock,condition_variable,async.future

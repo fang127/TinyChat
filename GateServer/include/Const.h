@@ -9,8 +9,10 @@
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <cassert>
 #include <condition_variable>
 #include <functional>
+#include <hiredis/hiredis.h>
 #include <iostream>
 #include <jsoncpp/json/json.h>
 #include <jsoncpp/json/reader.h>

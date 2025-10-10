@@ -38,6 +38,8 @@ message(STATUS "Protobuf include: ${Protobuf_INCLUDE_DIRS}")
 message(STATUS "Protobuf libs: ${Protobuf_LIBRARIES}")
 message(STATUS "gRPC include: ${gRPC_INCLUDE_DIRS}")
 message(STATUS "gRPC libs: ${gRPC_LIBRARIES}")
+message(STATUS "hiredis include: ${hiredis_INCLUDE_DIRS}")
+message(STATUS "hiredis libs: ${hiredis_LIBRARIES}")
 
 # 创建一个静态库来包含所有业务逻辑
 add_library(GateServerLib STATIC ${SOURCE_FILES})
@@ -47,7 +49,11 @@ target_include_directories(GateServerLib PRIVATE
     ${CMAKE_SOURCE_DIR}/include 
     ${Protobuf_INCLUDE_DIRS}
     ${gRPC_INCLUDE_DIRS}
+    ${hiredis_INCLUDE_DIRS}
+    /usr/local/include/hiredis # 如果hiredis安装在非标准路径，手动添加
 )
+
+link_directories(/usr/local/lib) # 如果hiredis安装在非标准路径，手动添加
 
 target_link_libraries(GateServerLib PRIVATE 
     ${Protobuf_LIBRARIES} 
@@ -55,7 +61,8 @@ target_link_libraries(GateServerLib PRIVATE
     gRPC::grpc++
     Threads::Threads 
     ${Boost_LIBRARIES}
-)
+    hiredis # 如果hiredis安装在非标准路径，手动添加
+    )
 
 # 处理 JsonCpp 链接
 if(JsonCpp_FOUND)
