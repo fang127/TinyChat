@@ -22,9 +22,11 @@ public:
                const std::string &port);
     ~RPConnPool();
 
-    std::size_t poolSize();
+    void close();
 
-    void RPConnPool::close();
+    std::unique_ptr<VerifyService::Stub> getConnection();
+
+    void returnConnection(std::unique_ptr<VerifyService::Stub> context);
 
 private:
     std::atomic<bool> bStop_;
@@ -45,4 +47,6 @@ public:
 
 private:
     VerifyGrpcClient();
+
+    std::unique_ptr<RPConnPool> pool_;
 };

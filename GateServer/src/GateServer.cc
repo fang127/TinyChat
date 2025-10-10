@@ -7,7 +7,7 @@
 #include <jsoncpp/json/value.h>
 int main()
 {
-    auto &gCfgNgr = ConfigMgr::getInstance();
+    auto &gCfgMgr = ConfigMgr::getInstance();
     std::string gatePortStr = gCfgMgr["GateServer"]["Port"];
     unsigned short gatePort = atoi(gatePortStr.c_str());
     try
