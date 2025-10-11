@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Const.h"
+#include "RedisConnPool.h"
 
 class RedisMgr : public Singleton<RedisMgr>,
                  public std::enable_shared_from_this<RedisMgr>
@@ -8,8 +9,7 @@ class RedisMgr : public Singleton<RedisMgr>,
     friend class Singleton<RedisMgr>;
 
 public:
-    ~RedisMgr() = default;
-    bool connect(const std::string &host, int port);
+    ~RedisMgr();
     bool get(const std::string &key, std::string &value);
     bool set(const std::string &key, const std::string &value);
     bool auth(const std::string &password);
@@ -30,8 +30,7 @@ public:
     void close();
 
 private:
-    RedisMgr() = default;
+    RedisMgr();
 
-    redisContext *connect_;
-    redisReply *reply_;
+    std::unique_ptr<RedisConnPool> pool_;
 };

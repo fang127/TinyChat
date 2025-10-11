@@ -19,3 +19,7 @@
 ### day07
 - 构建连接池，实现GateServer和VerifyGrpcClient
 - 复习多线程编程中的thread,mutex,lock_guard,unique_lock,condition_variable,async.future
+### day08
+- 封装redismgr，实现程序与远程redis的增删改查
+- 实现redis连接池，提高多并发的能力
+- redis连接池的池数据结构pool采用的是queue，可以进一步修改，两端锁，可以同时访问两个，当前并发访问一个
