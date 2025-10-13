@@ -19,7 +19,7 @@ let transport = nodemailer.createTransport({
  * @param {*} mailOptions_ 发送邮件的参数
  * @returns 
  */
-function SendMail(mailOptions_) {
+function sendMail(mailOptions_) {
     return new Promise(function (resolve, reject) {
         transport.sendMail(mailOptions_, function (error, info) {
             if (error) {
@@ -34,4 +34,4 @@ function SendMail(mailOptions_) {
 
 }
 
-module.exports.SendMail = SendMail
+module.exports.sendMail = sendMail

@@ -1,4 +1,4 @@
-let code_prefix = "code_";
+let codePrefix = "code_";
 
 const Errors = {
     Success: 0,
@@ -8,5 +8,5 @@ const Errors = {
 
 
 module.exports = {
-    code_prefix, Errors
+    codePrefix, Errors
 }

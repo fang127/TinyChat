@@ -4,12 +4,12 @@
         "pass": "PZpNLuSs9sDfHBEx"
     },
     "mysql": {
-        "host": "localhost",
+        "host": "47.109.75.235",
         "port": 3306,
         "passwd": 123456
     },
     "redis": {
-        "host": "localhost",
+        "host": "47.109.75.235",
         "port": 6379,
         "passwd": 123456
     }

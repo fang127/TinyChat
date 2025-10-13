@@ -84,6 +84,7 @@ void RedisConnPool::returnConnection(redisContext *context)
     std::lock_guard<std::mutex> lock(mutex_);
     if (stop_)
     {
+        redisFree(context);
         return;
     }
     connections_.push(context);
