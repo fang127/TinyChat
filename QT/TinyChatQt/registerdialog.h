@@ -21,6 +21,8 @@ private slots:
     void on_getCode_clicked();
     void slotRegModFinish(ReqId id, QString res, ErrorCodes err);
 
+    void on_sureBtn_clicked();
+
 private:
     void initHttpHandlers();
     void showTip(QString str, bool bOk);

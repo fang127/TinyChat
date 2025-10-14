@@ -19,8 +19,8 @@ void HttpMgr::postHttpReq(QUrl url, QJsonObject json, ReqId reqId, Modules mod)
                       QByteArray::number(data.length()));
     // 发送请求，并处理响应,
     // 获取自己的智能指针，构造伪闭包并增加智能指针引用计数
-    auto self =
-        shared_from_this(); // self对象确保在下面post发送数据过程中HttpMgr对象不会被析构，从而确保在发送完数据，reply受到信号可以调用回调函数，该回调函数会使用HttpMgr对象内的资源
+    // self对象确保在下面post发送数据过程中HttpMgr对象不会被析构，从而确保在发送完数据，reply受到信号可以调用回调函数，该回调函数会使用HttpMgr对象内的资源
+    auto self = shared_from_this();
     QNetworkReply *reply = manager_.post(request, data);
     // 设置信号和槽等待发送完成
     QObject::connect(reply, &QNetworkReply::finished,

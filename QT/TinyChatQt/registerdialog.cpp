@@ -92,6 +92,20 @@ void RegisterDialog::initHttpHandlers()
                          showTip(tr("验证码已经发送到邮箱，注意查收"), true);
                          qDebug() << "email is " << email;
                      });
+
+    //注册注册用户回包逻辑
+    handlers_.insert(ReqId::ID_REG_USER,
+                    [this](QJsonObject jsonObj)
+                    {
+                    int error = jsonObj["error"].toInt();
+                    if(error != ErrorCodes::SUCCESS){
+                    showTip(tr("参数错误"),false);
+                    return;
+                    }
+                    auto email = jsonObj["email"].toString();
+                    showTip(tr("用户注册成功"), true);
+                    qDebug()<< "email is " << email ;
+                    });
 }
 
 void RegisterDialog::showTip(QString str, bool bOk)
@@ -108,3 +122,51 @@ void RegisterDialog::showTip(QString str, bool bOk)
 
     repolish(ui->errTip);
 }
+
+void RegisterDialog::on_sureBtn_clicked()
+{
+    if(ui->userEdit->text() == "")
+    {
+        showTip(tr("用户名不能为空"), false);
+        return;
+    }
+
+    if(ui->emailEdit->text() == "")
+    {
+        showTip(tr("邮箱不能为空"), false);
+        return;
+    }
+
+    if(ui->passEdit->text() == "")
+    {
+        showTip(tr("密码不能为空"), false);
+        return;
+    }
+
+    if(ui->confirmEdit->text() == "")
+    {
+        showTip(tr("确认密码不能为空"), false);
+        return;
+    }
+
+    if(ui->confirmEdit->text() != ui->passEdit->text())
+    {
+        showTip(tr("密码和确认密码不匹配"), false);
+        return;
+    }
+
+    if(ui->verifyEdit->text() == ""){
+        showTip(tr("验证码不能为空"), false);
+        return;
+    }
+
+    // set http body text
+    QJsonObject jsonObj;
+    jsonObj["user"] = ui->userEdit->text();
+    jsonObj["email"] = ui->emailEdit->text();
+    jsonObj["passwd"] = ui->passEdit->text();
+    jsonObj["confirm"] = ui->confirmEdit->text();
+    jsonObj["verifycode"] = ui->verifyEdit->text();
+    HttpMgr::getInstance_()->postHttpReq(QUrl(gateUrlPrefix + "/user_register"),jsonObj,ReqId::ID_REG_USER,Modules::REGISTERMOD);
+}
+

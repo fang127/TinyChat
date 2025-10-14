@@ -14,7 +14,7 @@
 - 学习grpc的使用[教程](https://www.bilibili.com/video/BV1qhSwYPEcp?spm_id_from=333.788.videopod.episodes&vd_source=344f27a24899c0d3bae08b279eb001aa)
 - 将服务器，客户端，邮箱验证服务器串起来
 ### day06
-- 学习饿汉模式和c++11之后的懒汉单例模式
+- 学习饿汉模式和c++11之后的懒汉单例模式,利用懒汉单例模式实现ConfigMgr,从 C++11 起，函数局部静态变量的初始化是线程安全的；在更早的标准下需要额外同步
 - 使用std::thread构建一个asioIOServicePool,实现多线程处理事件，one loop one thread，主线程只负责accept
 ### day07
 - 构建连接池，实现GateServer和VerifyGrpcClient
@@ -26,3 +26,6 @@
 ### day09
 - 增加验证服务器对redis的访问，将验证服务器产生的验证码注册进redis，并且设置过期时间，实现定时注册
 - 前端界面完成简单的注册模块，下一步实现将注册的用户账号和密码保存到mysql
+### day10
+- 学习mysql的c++ connector库的使用，编写简单的mysql客户端程序连接本地mysql进行查询语句
+- 
