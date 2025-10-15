@@ -53,7 +53,7 @@ target_include_directories(GateServerLib PRIVATE
     /usr/local/include/hiredis # 如果hiredis安装在非标准路径，手动添加
 )
 
-link_directories(/usr/local/lib) # 如果hiredis安装在非标准路径，手动添加
+link_directories(/usr/local/lib /usr/lib/x86_64-linux-gnu) # 如果hiredis安装在非标准路径，手动添加
 
 target_link_libraries(GateServerLib PRIVATE 
     ${Protobuf_LIBRARIES} 
@@ -62,6 +62,7 @@ target_link_libraries(GateServerLib PRIVATE
     Threads::Threads 
     ${Boost_LIBRARIES}
     hiredis # 如果hiredis安装在非标准路径，手动添加
+    mysqlcppconn
     )
 
 # 处理 JsonCpp 链接

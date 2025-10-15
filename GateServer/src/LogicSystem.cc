@@ -1,5 +1,6 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
+#include "MySQLMgr.h"
 #include "RedisMgr.h"
 #include "VerifyGrpcClient.h"
 
@@ -136,6 +137,15 @@ LogicSystem::LogicSystem()
             }
 
             // 查找数据库判断用户是否存在mysql
+            int uid = MySQLMgr::getInstance()->regUser(name, email, passwd);
+            if (uid <= 0)
+            {
+                std::cout << "user or email exist" << std::endl;
+                root["error"] = ErrorCodes::UserExist;
+                std::string jsonStr = root.toStyledString();
+                beast::ostream(connection->response_.body()) << jsonStr;
+                return true;
+            }
 
             // 发送数据
             root["error"] = 0;

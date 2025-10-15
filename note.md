@@ -28,4 +28,5 @@
 - 前端界面完成简单的注册模块，下一步实现将注册的用户账号和密码保存到mysql
 ### day10
 - 学习mysql的c++ connector库的使用，编写简单的mysql客户端程序连接本地mysql进行查询语句
-- 
+- 完成mysql连接池，以及封装的mysql实例MySQLDao和MySQLMgr，完善了用户注册模块，将注册的信息添加到mysql中归档
+- 学习golang的特性Defer，通过c++自制该特性 
