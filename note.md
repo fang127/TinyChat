@@ -29,4 +29,7 @@
 ### day10
 - 学习mysql的c++ connector库的使用，编写简单的mysql客户端程序连接本地mysql进行查询语句
 - 完成mysql连接池，以及封装的mysql实例MySQLDao和MySQLMgr，完善了用户注册模块，将注册的信息添加到mysql中归档
-- 学习golang的特性Defer，通过c++自制该特性 
+- 学习golang的特性Defer，通过c++自制该特性
+### day11
+- qt客户端注册界面完善，加入了更加严格的用户输入的邮箱，密码，确认密码，验证码验证，确保输入的格式正确
+- 实现ClickedLabel类，添加Css资源，通过点击切换密码的显示和隐藏 

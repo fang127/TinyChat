@@ -30,6 +30,10 @@ set(PROJECT_SOURCES
         singleton.h
         httpmgr.h
         httpmgr.cpp
+        Timerbtn.h
+        Timerbtn.cpp
+        ClickedLabel.h
+        ClickedLabel.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

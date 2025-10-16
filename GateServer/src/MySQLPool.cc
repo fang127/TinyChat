@@ -79,6 +79,7 @@ void MySQLPool::checkConnection()
         // golang特性，Defer函数对象，在析构函数中执行push的操作，确保每一个连接用完了后归还连接池
         Defer defer([this, &conn]() { pool_.push(std::move(conn)); });
 
+        // 5s用来测试 需要优化 opt code ...
         if (timeStamp - conn->lastOperTime_ < 5)
         {
             continue;

@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 public slots:
     void slotSwitchReg();
-
+    void slotSwitchLogin();
 private:
     Ui::MainWindow *ui;
     LoginDialog *loginDialog_;
