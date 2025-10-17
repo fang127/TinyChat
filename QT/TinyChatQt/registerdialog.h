@@ -20,8 +20,11 @@ public:
 private slots:
     void on_getCode_clicked();
     void slotRegModFinish(ReqId id, QString res, ErrorCodes err);
-
     void on_sureBtn_clicked();
+    // 返回按钮的槽函数中停止定时器并发送切换登录的信号
+    void on_returnBtn_clicked();
+    // 取消注册也发送切换登录信号
+    void on_cancelBtn_clicked();
 
 private:
     void initHttpHandlers();
@@ -36,10 +39,7 @@ private:
     bool checkConfirmValid();
     // 页面切换逻辑
     void changeTipPage();
-    // 返回按钮的槽函数中停止定时器并发送切换登录的信号
-    void on_returnBtn_clicked();
-    // 取消注册也发送切换登录信号
-    void on_cancelBtn_clicked();
+
 
     Ui::RegisterDialog *ui;
 

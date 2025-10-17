@@ -4,17 +4,18 @@
 
 ClickedLabel::ClickedLabel(QWidget *parent) : QLabel(parent),curstate_(ClickLbState::Normal)
 {
-
+    this->setCursor(Qt::PointingHandCursor);
 }
 
+// 鼠标点击事件
 void ClickedLabel::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
+    if(event->button() == Qt::LeftButton) // 仅处理左键
     {
         if(curstate_ == ClickLbState::Normal)
         {
             qDebug() << "clicked, change to selected hover: " << selectedHover_;
-            curstate_ = ClickLbState::Selected;
+            curstate_ = ClickLbState::Selected;// 切换到Selected状态：更新状态→设置选中状态的悬停样式→刷新
             setProperty("state", selectedHover_);
             repolish(this);
             update();
@@ -25,8 +26,8 @@ void ClickedLabel::mousePressEvent(QMouseEvent *event)
             // set CSS
             curstate_ = ClickLbState::Normal;
             setProperty("state", normalHover_);
-            repolish(this);
-            update();
+            repolish(this);// 重新应用样式表
+            update();// 触发重绘
         }
         emit clicked();
     }
@@ -34,19 +35,20 @@ void ClickedLabel::mousePressEvent(QMouseEvent *event)
     QLabel::mousePressEvent(event);
 }
 
+// 鼠标进入事件
 void ClickedLabel::enterEvent(QEnterEvent *event)
 {
     if(curstate_ == ClickLbState::Normal)
     {
         qDebug() << "enter, change to normal hover: " << normalHover_;
-        setProperty("state",normalHover_);
+        setProperty("state",normalHover_);// 默认状态→显示默认悬停样式
         repolish(this);
         update();
     }
     else
     {
         qDebug() << "enter, change to selected hover: " << selectedHover_;
-        setProperty("state",selectedHover_);
+        setProperty("state",selectedHover_);// 选中状态→显示选中悬停样式
         repolish(this);
         update();
     }
@@ -54,19 +56,20 @@ void ClickedLabel::enterEvent(QEnterEvent *event)
     QLabel::enterEvent(event);
 }
 
+// 鼠标离开事件
 void ClickedLabel::leaveEvent(QEvent *event)
 {
     if(curstate_ == ClickLbState::Normal)
     {
         qDebug() << "leave, change to normal hover: " << normal_;
-        setProperty("state",normal_);
+        setProperty("state",normal_);// 默认状态→回到默认样式
         repolish(this);
         update();
     }
     else
     {
         qDebug() << "leave, change to selected hover: " << selected_;
-        setProperty("state",selected_);
+        setProperty("state",selected_);// 选中状态→回到选中默认样式
         repolish(this);
         update();
     }

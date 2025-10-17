@@ -1,4 +1,4 @@
-QDialog#LoginDialog,#RegisterDialog{
+QDialog#LoginDialog,#RegisterDialog,#Resetdialog{
 background-color:rgb(255,255,255)
 }
 
@@ -6,11 +6,11 @@ background-color:rgb(255,255,255)
     color:black
 }
 
-#errTip[state='normal']{
+#errTip[state='normal'],#resetErrTip[state='normal']{
     color:green
 }
 
-#errTip[state='err']{
+#errTip[state='err'],#resetErrTip[state='err']{
     color:red
 }
 
@@ -44,5 +44,29 @@ background-color:rgb(255,255,255)
 }
 
 #confirmVisible[state='visible_hover']{
+   border-image: url(:/res/visible_hover.png);
+}
+
+#forgetLabel[state='normal'],#forgetLabel[state='selected']{
+    color: black;
+}
+
+#forgetLabel[state='hover'], #forgetLabel[state='selected_hover']{
+    color: rgb(42, 112, 241);
+}
+
+#resetPassVisible[state='unvisible']{
+   border-image: url(:/res/unvisible.png);
+}
+
+#resetPassVisible[state='unvisible_hover']{
+   border-image: url(:/res/unvisible_hover.png);
+}
+
+#resetPassVisible[state='visible']{
+   border-image: url(:/res/visible.png);
+}
+
+#resetPassVisible[state='visible_hover']{
    border-image: url(:/res/visible_hover.png);
 }

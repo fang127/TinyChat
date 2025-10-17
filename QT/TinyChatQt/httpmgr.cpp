@@ -54,4 +54,9 @@ void HttpMgr::slotHttpFinish(ReqId id, QString res, ErrorCodes err, Modules mod)
         // 发送信号通知指定注册模块http的响应结束了
         emit sigRegModFinish(id, res, err);
     }
+
+    if (mod == Modules::RESETPASSMOD)
+    {
+        emit sigResetModFinish(id,res,err);
+    }
 }

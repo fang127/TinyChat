@@ -34,6 +34,9 @@ set(PROJECT_SOURCES
         Timerbtn.cpp
         ClickedLabel.h
         ClickedLabel.cpp
+        Resetdialog.h
+        Resetdialog.cpp
+        Resetdialog.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -3,7 +3,7 @@
 #include <QMouseEvent>
 #include <QDebug>
 
-TimerBtn::TimerBtn(QWidget *parent) : QPushButton(parent),counter_(10)
+TimerBtn::TimerBtn(QWidget *parent) : QPushButton(parent),counter_(60)
 {
     timer_ = new QTimer(this); // 定时器
 
