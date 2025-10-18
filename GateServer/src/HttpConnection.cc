@@ -20,6 +20,7 @@ void HttpConnection::start()
                              }
 
                              // 忽略掉已经发生的请求
+                             // 主要作用抑制编译器警告，因为没有用到这个参数，编译器会发出警告
                              boost::ignore_unused(bytesTransferred);
                              self->handleReq();
                              // 启动超时监测
@@ -108,7 +109,7 @@ void HttpConnection::writeResponse()
     http::async_write(socket_, response_,
                       [self](beast::error_code ec, std::size_t bytesTransferred)
                       {
-                          // 关闭服务器的读端
+                          // 关闭服务器的写端
                           self->socket_.shutdown(tcp::socket::shutdown_send,
                                                  ec);
                           // 取消定时器

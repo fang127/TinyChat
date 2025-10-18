@@ -80,7 +80,7 @@ void MySQLPool::checkConnection()
         Defer defer([this, &conn]() { pool_.push(std::move(conn)); });
 
         // 5s用来测试 需要优化 opt code ...
-        if (timeStamp - conn->lastOperTime_ < 5)
+        if (timeStamp - conn->lastOperTime_ < 600)
         {
             continue;
         }

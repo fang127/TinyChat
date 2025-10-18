@@ -250,7 +250,7 @@ void Resetdialog::on_resetConfirm_clicked()
     QJsonObject jsonObj;
     jsonObj["user"] = ui->resetUserText->text();
     jsonObj["email"] = ui->resetEmailText->text();
-    jsonObj["passwd"] = ui->resetPassText->text();
+    jsonObj["passwd"] = xorString(ui->resetPassText->text());
     jsonObj["verifyCode"] = ui->resetCodeText->text();
     HttpMgr::getInstance_()->postHttpReq(QUrl(gateUrlPrefix + "/reset_pwd"),
                                          jsonObj, ReqId::ID_RESET_PWD,
