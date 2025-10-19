@@ -59,4 +59,9 @@ void HttpMgr::slotHttpFinish(ReqId id, QString res, ErrorCodes err, Modules mod)
     {
         emit sigResetModFinish(id,res,err);
     }
+
+    if(mod == Modules::LOGINMOD)
+    {
+        emit sigLoginModFinish(id,res,err);
+    }
 }

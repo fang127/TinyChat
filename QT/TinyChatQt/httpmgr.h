@@ -33,6 +33,7 @@ signals:
     void sigHttpFinish(ReqId id, QString res, ErrorCodes err, Modules mod);
     void sigRegModFinish(ReqId id, QString res, ErrorCodes err);
     void sigResetModFinish(ReqId id, QString res, ErrorCodes err);
+    void sigLoginModFinish(ReqId id, QString res, ErrorCodes err);
 };
 
 #endif // HTTPMGR_H

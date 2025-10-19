@@ -36,4 +36,9 @@
 - 完成注册界面，登录界面以及注册完成倒计时切换登录界面的操作，通过qt槽函数和信号机制实现各个界面间的切换
 ### day12
 - 完成qt客户端忘记密码界面，客户端通过邮箱修改新密码的操作
-- 完成GateServer修改密码的功能,将客户端与服务器连接，并且更新mysql中的用户数据 
+- 完成GateServer修改密码的功能,将客户端与服务器连接，并且更新mysql中的用户数据
+### day13
+- 完成StatusServer以及客户端登录界面
+- GateServer新增登录模块
+- 客户端先通过短连接发送GateServer登录信息，GateServer通过mysql数据库验证客户信息，客户信息正确则调用grpc向StatusServer获取长连接的通信服务器ip和port以及token，StatusServer实现服务器的负载均衡，选择连接少的服务器返回给GateServer，GateServer再通过回调函数返回客户端长连接的服务器信息
+ 
