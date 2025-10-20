@@ -41,4 +41,7 @@
 - 完成StatusServer以及客户端登录界面
 - GateServer新增登录模块
 - 客户端先通过短连接发送GateServer登录信息，GateServer通过mysql数据库验证客户信息，客户信息正确则调用grpc向StatusServer获取长连接的通信服务器ip和port以及token，StatusServer实现服务器的负载均衡，选择连接少的服务器返回给GateServer，GateServer再通过回调函数返回客户端长连接的服务器信息
+### day14
+- 完成QT客户端TCP管理类
+
  

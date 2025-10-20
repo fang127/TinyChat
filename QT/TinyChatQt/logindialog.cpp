@@ -1,4 +1,5 @@
 #include "logindialog.h"
+#include "TcpMgr.h"
 #include "httpmgr.h"
 #include "ui_logindialog.h"
 
@@ -56,6 +57,13 @@ LoginDialog::LoginDialog(QWidget *parent)
             [this]() { checkEmailValid(); });
     connect(ui->loginPassEdit, &QLineEdit::editingFinished, this,
             [this]() { checkEmailValid(); });
+
+    // 连接tcp连接请求的信号和槽函数
+    connect(this, &LoginDialog::sigConnectTcp, TcpMgr::getInstance_().get(),
+            &TcpMgr::slotTcpConnect);
+    // 连接tcp管理者发生的连接成功信号
+    connect(TcpMgr::getInstance_().get(), &TcpMgr::sigConSuccess, this,
+            &LoginDialog::slotTcpConnFinish);
 }
 
 LoginDialog::~LoginDialog()
@@ -128,7 +136,7 @@ void LoginDialog::initHttpHandlers()
                               << "email is " << email << " uid is " << si.uid_
                               << " host is " << si.host_ << " Port is "
                               << si.port_ << " Token is " << si.token_;
-                          emit sig_connect_tcp(si);
+                          emit sigConnectTcp(si);
                       });
 }
 
@@ -244,12 +252,12 @@ void LoginDialog::on_loginBtn_clicked()
         return;
     }
 
-    auto user = ui->loginEmailEdit->text();
-    auto passwd = ui->loginPassEdit->text();
+    enableBtn(false);
+
     // 发送http请求登录
     QJsonObject jsonObj;
-    jsonObj["user"] = user;
-    jsonObj["passwd"] = xorString(passwd);
+    jsonObj["email"] = ui->loginEmailEdit->text();
+    jsonObj["passwd"] = xorString(ui->loginPassEdit->text());
     HttpMgr::getInstance_()->postHttpReq(QUrl(gateUrlPrefix + "/user_login"),
                                          jsonObj, ReqId::ID_LOGIN_USER,
                                          Modules::LOGINMOD);
@@ -273,4 +281,26 @@ void LoginDialog::slotLoginModFinish(ReqId id, QString res, ErrorCodes err)
     heandlers_[id](jsonDoc.object());
 
     return;
+}
+
+void LoginDialog::slotTcpConnFinish(bool bsuccess)
+{
+    if (bsuccess)
+    {
+        showTip(tr("聊天服务连接成功，正在登录..."), true);
+        QJsonObject jsonObj;
+        jsonObj["uid"] = uid_;
+        jsonObj["token"] = token_;
+
+        QJsonDocument doc(jsonObj);
+        QString jsonString = doc.toJson(QJsonDocument::Indented);
+
+        // 发生tcp请求给chatserver
+        TcpMgr::getInstance_()->sigSendData(ReqId::ID_CHAT_LOGIN, jsonString);
+    }
+    else
+    {
+        showTip(tr("网络异常"), false);
+        enableBtn(true);
+    }
 }

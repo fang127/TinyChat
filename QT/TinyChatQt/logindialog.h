@@ -10,14 +10,6 @@ namespace Ui
 class LoginDialog;
 }
 
-struct ServerInfo
-{
-    int uid_;
-    QString host_;
-    QString port_;
-    QString token_;
-};
-
 class LoginDialog : public QDialog
 {
     Q_OBJECT
@@ -45,11 +37,12 @@ private:
 signals:
     void sigSwitchRegister();
     void sigSwitchReset();
-    void sig_connect_tcp(ServerInfo si);
+    void sigConnectTcp(ServerInfo si);
 private slots:
     void slotForgetPwd();
     void on_loginBtn_clicked();
     void slotLoginModFinish(ReqId id, QString res, ErrorCodes err);
+    void slotTcpConnFinish(bool bsuccess);
 };
 
 #endif // LOGINDIALOG_H
