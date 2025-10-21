@@ -15,7 +15,7 @@ class AsioIOServicePool : public Singleton<AsioIOServicePool>
 public:
     using IOService = boost::asio::io_context;
     using Work = boost::asio::io_context::work;
-    using WorkPtr = std::shared_ptr<Work>;
+    using WorkPtr = std::unique_ptr<Work>;
 
     AsioIOServicePool(const AsioIOServicePool &) = delete;
     AsioIOServicePool &operator=(const AsioIOServicePool &) = delete;
@@ -32,5 +32,6 @@ private:
     std::size_t sizePool_;
     std::vector<IOService> ioService_;
     std::vector<WorkPtr> work_;
-    std::vector<std::thread> thread_;
+    std::vector<std::thread> threads_;
+    std::atomic<std::size_t> curUsedIoc_;
 };
