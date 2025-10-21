@@ -41,6 +41,8 @@ enum ErrorCodes
     EmailNotMatch = 1007,  // 邮箱不匹配
     PassedUpFailed = 1008, // 更新密码失败
     PasswdInvalid = 1009,  // 密码无效
+    TokenInvalid = 1010,   // Token失效
+    UidInvalid = 1011,     // uid无效
 };
 
 const std::string codePrefix = "code_";

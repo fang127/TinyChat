@@ -1,4 +1,5 @@
 #include "TcpMgr.h"
+#include "UserMgr.h"
 
 #include <QJsonDocument>
 #include <QObject>
@@ -83,24 +84,24 @@ TcpMgr::TcpMgr()
 
                 qDebug() << "Message ID: " << messageId_
                          << ", Length: " << messageLen_;
+
+                // 判断buffer_剩余长度是否大于messageLen_，大于说明是个完整的数据，小于则等待
+                if (buffer_.size() < messageLen_)
+                {
+                    // 粘包发生
+                    bRecvPending_ = true;
+                    return;
+                }
+
+                bRecvPending_ = false;
+
+                // 读取消息
+                QByteArray messageBody = buffer_.mid(0, messageLen_);
+                qDebug() << "receive body message is: " << messageBody;
+
+                buffer_ = buffer_.mid(messageLen_);
+                handleMsg(ReqId(messageId_), messageLen_, messageBody);
             }
-
-            // 判断buffer_剩余长度是否大于messageLen_，大于说明是个完整的数据，小于则等待
-            if (buffer_.size() < messageLen_)
-            {
-                // 粘包发生
-                bRecvPending_ = true;
-                return;
-            }
-
-            bRecvPending_ = false;
-
-            // 读取消息
-            QByteArray messageBody = buffer_.mid(0, messageLen_);
-            qDebug() << "receive body message is: " << messageBody;
-
-            buffer_ = buffer_.mid(messageLen_);
-            handleMsg(ReqId(messageId_), messageLen_, messageBody);
         });
 
     // 处理错误
@@ -131,14 +132,12 @@ TcpMgr::TcpMgr()
 // 注册回调
 void TcpMgr::initHandlers()
 {
-    auto tcpMgr = shared_from_this();
-
     handlers_.insert(
         ID_CHAT_LOGIN_RSP,
-        [tcpMgr](const ReqId &id, const int &len, const QByteArray &data)
+        [this](const ReqId &id, const int &len, const QByteArray &data)
         {
             Q_UNUSED(len);
-            qDebug() << "handle id is " << id;
+            qDebug() << "handle id is " << id << " data is " << data;
             // 将数据转为QJson
             QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
 
@@ -156,9 +155,23 @@ void TcpMgr::initHandlers()
             {
                 int err = ErrorCodes::ERR_JSON;
                 qDebug() << "Login Failed, err is Json Parse Err: " << err;
-                emit tcpMgr->sigLoginFailed(err);
+                emit sigLoginFailed(err);
                 return;
             }
+
+            int err = jsonObj["error"].toInt();
+            if (err != ErrorCodes::SUCCESS)
+            {
+                qDebug() << "Login Failed, err is " << err;
+                emit sigLoginFailed(err);
+                return;
+            }
+
+            UserMgr::getInstance_()->setUid(jsonObj["uid"].toInt());
+            UserMgr::getInstance_()->setName(jsonObj["name"].toString());
+            UserMgr::getInstance_()->setToken(jsonObj["token"].toString());
+            // 发生信号，切换到用户界面
+            emit sigSwitchChatDiaLog();
         });
 }
 

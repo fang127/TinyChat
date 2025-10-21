@@ -39,24 +39,16 @@ public:
 
     void close();
 
+private:
     // 读取消息头
     void asyncReadHead(int len);
-
-    // 读取完整消息
-    void asyncReadFull(std::size_t maxlen,
-                       std::function<void(const boost::system::error_code &,
-                                          std::size_t)> handler);
-
-    // 读取指定长度
-    void asyncReadLen(std::size_t readlen,
-                      std::size_t totalLen,
-                      std::function<void(const boost::system::error_code &,
-                                         std::size_t)> handler);
 
     // 读取消息体
     void asyncReadBody(int totalLen);
 
-private:
+    void handleWrite(const boost::system::error_code &error,
+                     std::shared_ptr<CSession> sharedSelf);
+
     boost::asio::ip::tcp::socket socket_;           // 套接字
     std::string sessionId_;                         // 连接id
     std::string userId_;                            // 用户id
@@ -69,4 +61,18 @@ private:
     std::shared_ptr<MsgNode> recvHeadNode_;         // 接收的消息头步信息
     std::atomic<std::time_t> lastRecvTime_;         // 上次接收数据的时间
     std::mutex sessionMutex_;                       // session锁
+};
+
+class LogicNode
+{
+    friend class LogicSystem;
+
+public:
+    LogicNode(std::shared_ptr<CSession>, std::shared_ptr<RecvNode>);
+
+    ~LogicNode() = default;
+
+private:
+    std::shared_ptr<CSession> session_;
+    std::shared_ptr<RecvNode> recvNode_;
 };

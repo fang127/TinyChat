@@ -39,6 +39,8 @@ set(PROJECT_SOURCES
         Resetdialog.ui
         TcpMgr.h
         TcpMgr.cpp
+        UserMgr.h
+        UserMgr.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

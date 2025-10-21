@@ -7,8 +7,8 @@
 #include <QtNetwork/QTcpSocket>
 
 // 客户端Tcp管理类
-class TcpMgr : public Singleton<TcpMgr>,
-               public QObject,
+class TcpMgr : public QObject,
+               public Singleton<TcpMgr>,
                public std::enable_shared_from_this<TcpMgr>
 {
     friend class Singleton<TcpMgr>;
@@ -34,6 +34,8 @@ signals:
     void sigConnectionClosed();
     // 登录错误信号
     void sigLoginFailed(int err);
+    // 登录成功 切换到用户界面
+    void sigSwitchChatDiaLog();
 
 private:
     TcpMgr();

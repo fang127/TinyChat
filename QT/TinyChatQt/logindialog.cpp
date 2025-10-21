@@ -64,6 +64,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     // 连接tcp管理者发生的连接成功信号
     connect(TcpMgr::getInstance_().get(), &TcpMgr::sigConSuccess, this,
             &LoginDialog::slotTcpConnFinish);
+    // 连接tcp管理者发出的登陆失败信号
+    connect(TcpMgr::getInstance_().get(), &TcpMgr::sigLoginFailed, this,
+            &LoginDialog::slotLoginFailed);
 }
 
 LoginDialog::~LoginDialog()
@@ -296,11 +299,19 @@ void LoginDialog::slotTcpConnFinish(bool bsuccess)
         QString jsonString = doc.toJson(QJsonDocument::Indented);
 
         // 发生tcp请求给chatserver
-        TcpMgr::getInstance_()->sigSendData(ReqId::ID_CHAT_LOGIN, jsonString);
+        emit TcpMgr::getInstance_()
+            -> sigSendData(ReqId::ID_CHAT_LOGIN, jsonString);
     }
     else
     {
         showTip(tr("网络异常"), false);
         enableBtn(true);
     }
+}
+
+void LoginDialog::slotLoginFailed(int err)
+{
+    QString result = QString("登录失败, err is %1").arg(err);
+    showTip(result, false);
+    enableBtn(true);
 }

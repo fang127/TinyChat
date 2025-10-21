@@ -111,4 +111,4 @@ I/O 服务池: 它内部创建并管理一个 boost::asio::io_service (或 io_co
 负载均衡: 当 CServer 创建一个新的 CSession 时，AsioIOServicePool 会通过轮询等策略选择一个 io_service 交给这个 CSession。这样，所有客户端连接的I/O负载就被均匀地分配到了多个线程上，避免了单线程处理所有网络事件的瓶颈，极大地提高了服务器的并发处理能力。
 AsioIOServicePool 就像是服务器的“引擎组”，提供了多个并行的引擎（io_service 和关联的线程），让成千上万的 CSession 能够高效地并发运行。
 ### day15
-
+- 完成ChatServer框架

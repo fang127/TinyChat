@@ -124,39 +124,8 @@ ChatServer StatusServiceImpl::getChatServer()
     std::lock_guard<std::mutex> lock(mutex_);
     // 获取第一个服务器
     auto minServer = servers_.begin()->second;
-    // 获取服务器连接数
-    auto countStr = RedisMgr::getInstance()->hget(LOGIN_COUNT, minServer.name_);
-    if (countStr.empty())
+    for (const auto &server : servers_)
     {
-        // 不存在则默认设置为最大
-        minServer.count_ = INT_MAX;
-    }
-    else
-    {
-        minServer.count_ = static_cast<std::size_t>(std::stoi(countStr));
-    }
-
-    // 使用范围for循环获取服务器
-    for (auto &server : servers_)
-    {
-
-        if (server.second.name_ == minServer.name_)
-        {
-            continue;
-        }
-
-        auto countStr =
-            RedisMgr::getInstance()->hget(LOGIN_COUNT, server.second.name_);
-        if (countStr.empty())
-        {
-            server.second.count_ = INT_MAX;
-        }
-        else
-        {
-            server.second.count_ =
-                static_cast<std::size_t>(std::stoi(countStr));
-        }
-
         if (server.second.count_ < minServer.count_)
         {
             minServer = server.second;

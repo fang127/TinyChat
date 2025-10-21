@@ -1,6 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
+#include <mutex>
 
 // 奇异递归模板实现单例
 template <typename T> class Singleton
@@ -12,7 +14,7 @@ public:
     static std::shared_ptr<T> getInstance()
     {
         static std::once_flag flag;
-        std::call_once(flag, [&]() { instance_ = shared_ptr<T>(new T); });
+        std::call_once(flag, [&]() { instance_ = std::shared_ptr<T>(new T); });
         return instance_;
     }
     // 获取实例地址
