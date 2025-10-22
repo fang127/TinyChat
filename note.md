@@ -112,3 +112,6 @@ I/O 服务池: 它内部创建并管理一个 boost::asio::io_service (或 io_co
 AsioIOServicePool 就像是服务器的“引擎组”，提供了多个并行的引擎（io_service 和关联的线程），让成千上万的 CSession 能够高效地并发运行。
 ### day15
 - 完成ChatServer框架
+- 完成客户端到GateServer通过http发送登录，GateServer验证通过后通过grpc到StatusServer获取ChatServer服务器信息，然后GateServer通过http返回响应报文给客户端，客户端在根据服务器信息发送tcp连接到ChatServer请求登录，ChatServer验证通过后，允许登录返回响应报文给客户端的过程
+### day16
+- 初步构建聊天界面

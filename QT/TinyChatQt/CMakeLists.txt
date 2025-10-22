@@ -41,6 +41,20 @@ set(PROJECT_SOURCES
         TcpMgr.cpp
         UserMgr.h
         UserMgr.cpp
+        ChatDialog.h
+        ChatDialog.cpp
+        ChatDialog.ui
+        ClickedBtn.h
+        ClickedBtn.cpp
+        ChatUserList.h
+        ChatUserList.cpp
+        CustomizeEdit.h
+        CustomizeEdit.cpp
+        ChatUserWid.h
+        ChatUserWid.cpp
+        ChatUserWid.ui
+        ListItemBase.h
+        ListItemBase.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

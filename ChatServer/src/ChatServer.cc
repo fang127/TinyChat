@@ -5,7 +5,7 @@
 #include <iostream>
 
 ChatServer::ChatServer(boost::asio::io_context &ioc, const short &port)
-    : ioc_(ioc),
+    : ioc_(ioc), port_(port),
       accept_(ioc,
               boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
       timer_(ioc_, std::chrono::seconds(60))

@@ -1,14 +1,15 @@
 #include "AsioIOServicePool.h"
 
 AsioIOServicePool::AsioIOServicePool(std::size_t size)
-    : sizePool_(size), ioService_(size), curUsedIoc_(0)
+    : sizePool_(size), ioService_(size), work_(size), curUsedIoc_(0)
 {
+    threads_.reserve(size);
     for (std::size_t i = 0; i < sizePool_; ++i)
     {
         work_[i] = std::unique_ptr<Work>(new Work(ioService_[i]));
     }
 
-    for (int i = 0; i < ioService_.size(); ++i)
+    for (std::size_t i = 0; i < ioService_.size(); ++i)
     {
         threads_.emplace_back([this, i]() { ioService_[i].run(); });
     }

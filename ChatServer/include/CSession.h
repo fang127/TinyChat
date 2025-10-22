@@ -14,7 +14,7 @@ class ChatServer;
 
 // 一个客户端的连接分配一个Session，即Session管理一个连接
 // 需要处理该连接上的读写事件，以及连接断开
-class CSession : std::enable_shared_from_this<CSession>
+class CSession : public std::enable_shared_from_this<CSession>
 {
 public:
     CSession(boost::asio::io_context &ioc, ChatServer *server);

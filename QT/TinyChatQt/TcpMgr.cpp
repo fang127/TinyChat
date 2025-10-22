@@ -12,6 +12,7 @@ void TcpMgr::slotTcpConnect(ServerInfo serverInfo)
     qDebug() << "Connecting to server...";
     host_ = serverInfo.host_;
     port_ = static_cast<uint16_t>(serverInfo.port_.toInt());
+    qDebug() << "port: " << port_ << "host: " << host_;
     socket_.connectToHost(host_, port_);
 }
 
@@ -80,7 +81,7 @@ TcpMgr::TcpMgr()
 
                 // 将buffer_中的前4字节移除
                 // 从缓冲区移除已处理的数据
-                buffer_.remove(0, static_cast<int>(sizeof(quint16) * 2));
+                buffer_ = buffer_.mid(sizeof(quint16) * 2);
 
                 qDebug() << "Message ID: " << messageId_
                          << ", Length: " << messageLen_;

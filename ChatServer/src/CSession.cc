@@ -2,8 +2,8 @@
 #include "ChatServer.h"
 #include "LogicSystem.h"
 
-#include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <exception>
 #include <iostream>
@@ -12,11 +12,11 @@
 #include <jsoncpp/json/value.h>
 
 CSession::CSession(boost::asio::io_context &ioc, ChatServer *server)
-    : socket_(ioc), server_(server), close_(false), userId_(0)
+    : socket_(ioc), server_(server), close_(false), userId_("")
 {
     boost::uuids::uuid uuid = boost::uuids::random_generator()();
-    sessionId_ = boost::uuids::to_string(uuid);
-    recvHeadNode_ = std::shared_ptr<MsgNode>(new MsgNode(HEAD_TOTAL_LEN));
+    sessionId_ = to_string(uuid);
+    recvHeadNode_ = std::make_shared<MsgNode>(HEAD_TOTAL_LEN);
     lastRecvTime_ = std::time(nullptr);
 }
 
@@ -44,8 +44,8 @@ void CSession::asyncReadHead(int len)
     // 先读取头部
     boost::asio::async_read(
         socket_, boost::asio::buffer(data_, len),
-        [self, this](const boost::system::error_code &ec,
-                     std::size_t bytesWasTransfer)
+        [self, this, len](const boost::system::error_code &ec,
+                          std::size_t bytesWasTransfer)
         {
             try
             {
@@ -131,6 +131,7 @@ void CSession::send(char *msg, short maxlen, short msgId) {}
 
 void CSession::send(const std::string &msg, short msgId)
 {
+    std::cout << msg << std::endl;
     std::lock_guard<std::mutex> lock(sendLock_);
     int sendSize = sendQue_.size();
     if (sendSize > MAX_SENDQUE)
@@ -147,6 +148,11 @@ void CSession::send(const std::string &msg, short msgId)
         return;
     }
     auto &msgNode = sendQue_.front();
+    // 打印消息体（跳过头部）
+    const char *body = msgNode->data_ + HEAD_TOTAL_LEN;
+    const auto bodyLen = msgNode->totallen_ - HEAD_TOTAL_LEN;
+    std::cout << __func__ << "\nsend payload(len=" << bodyLen
+              << "): " << std::string(body, bodyLen) << std::endl;
     boost::asio::async_write(
         socket_, boost::asio::buffer(msgNode->data_, msgNode->totallen_),
         std::bind(&CSession::handleWrite, this, std::placeholders::_1,
@@ -158,6 +164,7 @@ void CSession::handleWrite(const boost::system::error_code &error,
 {
     try
     {
+        std::cout << __func__ << std::endl;
         auto self = shared_from_this();
         if (!error)
         {
