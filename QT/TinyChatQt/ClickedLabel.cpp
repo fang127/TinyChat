@@ -14,25 +14,53 @@ void ClickedLabel::mousePressEvent(QMouseEvent *event)
     {
         if(curstate_ == ClickLbState::Normal)
         {
-            qDebug() << "clicked, change to selected hover: " << selectedHover_;
+            qDebug() << "clicked, change to selected hover: " << selectedPress_;
             curstate_ = ClickLbState::Selected;// 切换到Selected状态：更新状态→设置选中状态的悬停样式→刷新
-            setProperty("state", selectedHover_);
+            setProperty("state", selectedPress_);
             repolish(this);
             update();
         }
         else
         {
-            qDebug() << "clicked, change to normal hover: " << normalHover_;
+            qDebug() << "clicked, change to normal hover: " << normalPress_;
             // set CSS
             curstate_ = ClickLbState::Normal;
+            setProperty("state", normalPress_);
+            repolish(this);// 重新应用样式表
+            update();// 触发重绘
+        }
+        return;
+    }
+    // base func to comfirm normal event was handle
+    QLabel::mousePressEvent(event);
+}
+
+void ClickedLabel::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton) // 仅处理左键
+    {
+        if(curstate_ == ClickLbState::Normal)
+        {
+            qDebug() << "clicked, change to selected hover: " << normalHover_;
+            curstate_ = ClickLbState::Selected;// 切换到Selected状态：更新状态→设置选中状态的悬停样式→刷新
             setProperty("state", normalHover_);
+            repolish(this);
+            update();
+        }
+        else
+        {
+            qDebug() << "clicked, change to normal hover: " << selectedHover_;
+            // set CSS
+            curstate_ = ClickLbState::Normal;
+            setProperty("state", selectedHover_);
             repolish(this);// 重新应用样式表
             update();// 触发重绘
         }
         emit clicked();
+        return;
     }
     // base func to comfirm normal event was handle
-    QLabel::mousePressEvent(event);
+    QLabel::mouseReleaseEvent(event);
 }
 
 // 鼠标进入事件

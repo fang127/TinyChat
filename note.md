@@ -115,3 +115,7 @@ AsioIOServicePool 就像是服务器的“引擎组”，提供了多个并行�
 - 完成客户端到GateServer通过http发送登录，GateServer验证通过后通过grpc到StatusServer获取ChatServer服务器信息，然后GateServer通过http返回响应报文给客户端，客户端在根据服务器信息发送tcp连接到ChatServer请求登录，ChatServer验证通过后，允许登录返回响应报文给客户端的过程
 ### day16
 - 初步构建聊天界面
+- 动态加载聊天列表
+### day17
+- 实现滚动聊天布局
+- 实现气泡聊天对话框

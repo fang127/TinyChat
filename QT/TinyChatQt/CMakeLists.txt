@@ -55,6 +55,24 @@ set(PROJECT_SOURCES
         ChatUserWid.ui
         ListItemBase.h
         ListItemBase.cpp
+        LoadDialog.h
+        LoadDialog.cpp
+        LoadDialog.ui
+        ChatPage.h
+        ChatPage.cpp
+        ChatPage.ui
+        ChatView.h
+        ChatView.cpp
+        ChatItemBase.h
+        ChatItemBase.cpp
+        BubbleFrame.h
+        BubbleFrame.cpp
+        TextBubble.h
+        TextBubble.cpp
+        PictureBubble.h
+        PictureBubble.cpp
+        MessageTextEdit.h
+        MessageTextEdit.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

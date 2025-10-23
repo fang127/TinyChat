@@ -1,6 +1,8 @@
 #include "ChatDialog.h"
 #include "ui_ChatDialog.h"
 #include "ChatUserWid.h"
+#include "LoadDialog.h"
+
 #include <QAction>
 #include <QRandomGenerator>
 
@@ -86,7 +88,7 @@ void ChatDialog::slotLoadingChatUser()
     }
 
     loading_ = true;
-    LoadingDlg *loadingDialog = new LoadingDlg(this);
+    LoadDialog *loadingDialog = new LoadDialog(this);
     loadingDialog->setModal(true);
     loadingDialog->show();
     qDebug() << "add new data to list......";
