@@ -314,3 +314,137 @@ LoadDialog{
 #chatArea{
     border:none;
 }
+
+#chatUserName {
+    color:rgb(153,153,153);
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+#sideChatLabel[state='normal']{
+    border-image: url(:/res/chat_icon.png);
+}
+
+#sideChatLabel[state='hover']{
+    border-image: url(:/res/chat_icon_hover.png);
+}
+
+#sideChatLabel[state='pressed']{
+    border-image: url(:/res/chat_icon_press.png);
+}
+
+#sideChatLabel[state='selected_normal']{
+    border-image: url(:/res/chat_icon_press.png);
+}
+
+#sideChatLabel[state='selected_hover']{
+    border-image: url(:/res/chat_icon_press.png);
+}
+
+#sideChatLabel[state='selected_pressed']{
+    border-image: url(:/res/chat_icon_press.png);
+}
+
+#sideContactLabel[state='normal']{
+    border-image: url(:/res/contact_list.png);
+}
+
+#sideContactLabel[state='hover']{
+    border-image: url(:/res/contact_list_hover.png);
+}
+
+#sideContactLabel[state='pressed']{
+    border-image: url(:/res/contact_list_press.png);
+}
+
+#sideContactLabel[state='selected_normal']{
+    border-image: url(:/res/contact_list_press.png);
+}
+
+#sideContactLabel[state='selected_hover']{
+    border-image: url(:/res/contact_list_press.png);
+}
+
+#sideContactLabel[state='selected_pressed']{
+    border-image: url(:/res/contact_list_press.png);
+}
+
+#chatSearchEdit {
+    border: 2px solid #f1f1f1;
+}
+
+/* 搜索框列表*/
+#chatSearchList {
+    background-color: rgb(247,247,248);
+    border: none;
+}
+
+#chatSearchList::item:selected {
+    background-color: #d3d7d4;
+    border: none;
+    outline: none;
+}
+
+#chatSearchList::item:hover {
+    background-color: rgb(206,207,208);
+    border: none;
+    outline: none;
+}
+
+#chatSearchList::focus {
+    border: none;
+    outline: none;
+}
+
+#invalidItem {
+    background-color: #eaeaea;
+    border: none;
+}
+
+#addTip {
+    border-image: url(:/res/addtip.png);
+}
+
+#rightTip{
+ border-image: url(:/res/right_tip.png);
+}
+
+#msgTip{
+  text-align: center;
+  font-family: "Microsoft YaHei";
+  font-size: 12pt;
+}
+
+
+#FindSuccessDialog{
+   background-color: #ffffff;
+}
+
+#nameLB{
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+#addFriendBtn[state='normal']{
+    background: #07c160;
+    color: #ffffff;
+    font-size: 14px; /* 设置字体大小 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    border-radius: 20px; /* 设置圆角 */
+}
+
+#addFriendBtn[state='hover']{
+    background: #3bbb4b;
+    color: #ffffff;
+    font-size: 14px; /* 设置字体大小 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    border-radius: 20px; /* 设置圆角 */
+}
+
+#addFriendBtn[state='press']{
+   background: #07c160;
+   color: #ffffff;
+   font-size: 14px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
+}
