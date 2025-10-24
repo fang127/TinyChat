@@ -73,6 +73,18 @@ set(PROJECT_SOURCES
         PictureBubble.cpp
         MessageTextEdit.h
         MessageTextEdit.cpp
+        StateWidget.h
+        StateWidget.cpp
+        SearchList.h
+        SearchList.cpp
+        UserData.h
+        UserData.cpp
+        AddUserItem.h
+        AddUserItem.cpp
+        AddUserItem.ui
+        FindSuccessDialog.h
+        FindSuccessDialog.cpp
+        FindSuccessDialog.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -2,6 +2,7 @@
 #define TCPMGR_H
 
 #include "singleton.h"
+#include "UserData.h"
 
 #include <QString>
 #include <QtNetwork/QTcpSocket>
@@ -36,6 +37,8 @@ signals:
     void sigLoginFailed(int err);
     // 登录成功 切换到用户界面
     void sigSwitchChatDiaLog();
+    // 搜索联系人
+    void sigUserSearch(std::shared_ptr<SearchInfo> info);
 
 private:
     TcpMgr();
