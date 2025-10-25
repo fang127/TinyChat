@@ -21,6 +21,10 @@ public:
 
     void setToken(const QString &token);
 
+    int getuid();
+
+    QString getName();
+
 private:
     UserMgr() = default;
 

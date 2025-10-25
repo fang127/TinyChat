@@ -85,6 +85,14 @@ set(PROJECT_SOURCES
         FindSuccessDialog.h
         FindSuccessDialog.cpp
         FindSuccessDialog.ui
+        ApplyFriend.h
+        ApplyFriend.cpp
+        ApplyFriend.ui
+        ClickedOnce.h
+        ClickedOnce.cpp
+        FriendLabel.h
+        FriendLabel.cpp
+        FriendLabel.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,4 +1,5 @@
 #include "ClickedLabel.h"
+#include "global.h"
 
 #include <QMouseEvent>
 
@@ -56,7 +57,7 @@ void ClickedLabel::mouseReleaseEvent(QMouseEvent *event)
             repolish(this);// 重新应用样式表
             update();// 触发重绘
         }
-        emit clicked();
+        emit clicked(this->text(), curstate_);
         return;
     }
     // base func to comfirm normal event was handle
@@ -122,4 +123,28 @@ void ClickedLabel::setState(QString normal, QString hover, QString press, QStrin
 ClickLbState ClickedLabel::getCurState()
 {
     return curstate_;
+}
+
+bool ClickedLabel::setCurState(ClickLbState state)
+{
+    curstate_ = state;
+    if(curstate_ == ClickLbState::Normal)
+    {
+        setProperty("state",normal_);
+        repolish(this);
+    }
+    else if(curstate_ == ClickLbState::Selected)
+    {
+        setProperty("state", selected_);
+        repolish(this);
+    }
+
+    return true;
+}
+
+void ClickedLabel::resetNormalState()
+{
+    curstate_ = ClickLbState::Normal;
+    setProperty("state", normal_);
+    repolish(this);
 }
