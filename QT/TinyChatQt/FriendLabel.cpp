@@ -28,7 +28,7 @@ void FriendLabel::setText(QString text)
     auto textHeight = fontMetrics.height();                  // 获取文本的高度
 
     qDebug() << " ui->tipLabel.width() is " << ui->tipLabel->width();
-    qDebug() << " ui->closeLabel->width() is " << ui->friendCloseLabel->width();
+    qDebug() << " ui->friendCloseLabel->width() is " << ui->friendCloseLabel->width();
     qDebug() << " textWidth is " << textWidth;
     this->setFixedWidth(ui->tipLabel->width() + ui->friendCloseLabel->width() +
                         5);

@@ -1,6 +1,6 @@
 #include "FindSuccessDialog.h"
+#include "applyfriend.h"
 #include "ui_FindSuccessDialog.h"
-#include "ApplyFriend.h"
 #include <QDir>
 
 FindSuccessDialog::FindSuccessDialog(QWidget *parent)
@@ -41,7 +41,7 @@ void FindSuccessDialog::on_addFriendBtn_clicked()
     // add code... 添加好友界面弹出
     this->hide();
     auto applyFriend = new ApplyFriend(parent_);
-    applyFriend->setSearchInfo(si_);
+    applyFriend->SetSearchInfo(si_);
     applyFriend->setModal(true);
     applyFriend->show();
 }

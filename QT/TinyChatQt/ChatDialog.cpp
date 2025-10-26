@@ -1,16 +1,17 @@
 #include "ChatDialog.h"
 #include "ChatUserWid.h"
 #include "LoadDialog.h"
+#include "TcpMgr.h"
+#include "UserMgr.h"
 #include "ui_ChatDialog.h"
-
 #include <QAction>
+#include <QLineEdit>
+#include <QMouseEvent>
 #include <QPixmap>
 #include <QRandomGenerator>
-#include <QMouseEvent>
-
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ChatDialog), mode_(ChatUIMode::ChatMode),
-      state_(ChatUIMode::ChatMode), loading_(false)
+      state_(ChatUIMode::ChatMode), loading_(false), lastWidget_(nullptr)
 {
     ui->setupUi(this);
     ui->chatAddBtn->setState("normal", "hover", "press");
@@ -82,7 +83,7 @@ ChatDialog::ChatDialog(QWidget *parent)
                                    "selected_pressed");
 
     addLBGroup(ui->sideChatLabel);
-    ;
+
     addLBGroup(ui->sideContactLabel);
 
     connect(ui->sideChatLabel, &StateWidget::clicked, this,
@@ -90,9 +91,13 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(ui->sideContactLabel, &StateWidget::clicked, this,
             &ChatDialog::slotSideContact);
     // 链接搜索框输入变化
-    connect(ui->chatSearchEdit, &QLineEdit::textChanged, this, &ChatDialog::slotTextChanged);
+    connect(ui->chatSearchEdit, &QLineEdit::textChanged, this,
+            &ChatDialog::slotTextChanged);
+    // 连接申请添加好友信号
+    connect(TcpMgr::getInstance_().get(), &TcpMgr::sigFriendApply, this,
+            &ChatDialog::slotApplyFriend);
     // 检测鼠标点击位置判断是否要情况搜索框
-    this->installEventFilter(this);// 按照事件过滤器
+    this->installEventFilter(this); // 按照事件过滤器
     // 设置聊天label选中状态
     ui->sideChatLabel->setSelected(true);
 }
@@ -136,7 +141,7 @@ void ChatDialog::clearLabelState(StateWidget *lb)
 
 bool ChatDialog::eventFilter(QObject *watched, QEvent *event)
 {
-    if(event->type() == QEvent::MouseButtonPress)
+    if (event->type() == QEvent::MouseButtonPress)
     {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         handleGlobalMousePress(mouseEvent);
@@ -176,15 +181,15 @@ void ChatDialog::slotSideContact()
     qDebug() << "receive side contact clicked";
     clearLabelState(ui->sideContactLabel);
     // 设置
-    // if (lastWidget_ == nullptr)
-    // {
-    //     ui->stackedWidget->setCurrentWidget(ui->friendApplyPage);
-    //     lastWidget_ = ui->friendApplyPage;
-    // }
-    // else
-    // {
-    //     ui->stackedWidget->setCurrentWidget(lastWidget_);
-    // }
+    if (lastWidget_ == nullptr)
+    {
+        ui->stackedWidget->setCurrentWidget(ui->friendPage);
+        lastWidget_ = ui->friendPage;
+    }
+    else
+    {
+        ui->stackedWidget->setCurrentWidget(lastWidget_);
+    }
 
     state_ = ChatUIMode::ContactMode;
     showSearch(false);
@@ -192,11 +197,27 @@ void ChatDialog::slotSideContact()
 
 void ChatDialog::slotTextChanged(const QString &str)
 {
-    //qDebug()<< "receive slot text changed str is " << str;
+    // qDebug()<< "receive slot text changed str is " << str;
     if (!str.isEmpty())
     {
         showSearch(true);
     }
+}
+
+void ChatDialog::slotApplyFriend(std::shared_ptr<AddFriendApply> apply)
+{
+    qDebug() << "receive apply friend slot, applyuid is " << apply->_from_uid
+             << " name is " << apply->_name << " desc is " << apply->_desc;
+
+    //   bool b_already =
+    //   UserMgr::getInstance_()->AlreadyApply(apply->_from_uid); if(b_already){
+    //        return;
+    //   }
+
+    //    UserMgr::getInstance_()->addApplyList(std::make_shared<ApplyInfo>(apply));
+    //    ui->sideContactLabel->showRedPoint(true);
+    //    ui->chatConnList->showRedPoint(true);
+    ui->friendPage->AddNewApply(apply);
 }
 
 void ChatDialog::showSearch(bool status)
@@ -230,13 +251,14 @@ void ChatDialog::handleGlobalMousePress(QMouseEvent *event)
 {
     // 实现点击位置的判断和处理逻辑
     // 先判断是否处于搜索模式，如果不处于搜索模式则直接返回
-    if( mode_ != ChatUIMode::SearchMode)
+    if (mode_ != ChatUIMode::SearchMode)
     {
         return;
     }
 
     // 将鼠标点击位置转换为搜索列表坐标系中的位置
-    QPoint posInSearchList = ui->chatSearchList->mapFromGlobal(event->globalPos());
+    QPoint posInSearchList =
+        ui->chatSearchList->mapFromGlobal(event->globalPos());
     // 判断点击位置是否在聊天列表的范围内
     if (!ui->chatSearchList->rect().contains(posInSearchList))
     {

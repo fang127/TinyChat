@@ -3,6 +3,7 @@
 
 #include "StateWidget.h"
 #include "global.h"
+#include "UserData.h"
 
 #include <QDialog>
 
@@ -30,6 +31,7 @@ private slots:
     void slotSideChat();
     void slotSideContact();
     void slotTextChanged(const QString &str);
+    void slotApplyFriend(std::shared_ptr<AddFriendApply> apply);
 
 private:
     void showSearch(bool status = false);
@@ -42,18 +44,6 @@ private:
     bool loading_;
     QList<StateWidget *> lbList_;
     QWidget *lastWidget_;
-    // 测试
-    std::vector<QString> strs = {
-        "hello world !", "nice to meet u", "New year，new life",
-        "You have to love yourself",
-        "My love is written in the wind ever since the whole world is you"};
-
-    std::vector<QString> heads = {":/res/head_1.jpg", ":/res/head_2.jpg",
-                                  ":/res/head_3.jpg", ":/res/head_4.jpg",
-                                  ":/res/head_5.jpg"};
-
-    std::vector<QString> names = {"llfc", "zack",   "golang", "cpp",
-                                  "java", "nodejs", "python", "rust"};
 };
 
 #endif // CHATDIALOG_H

@@ -1,8 +1,8 @@
 #ifndef TCPMGR_H
 #define TCPMGR_H
 
-#include "singleton.h"
 #include "UserData.h"
+#include "singleton.h"
 
 #include <QString>
 #include <QtNetwork/QTcpSocket>
@@ -39,6 +39,12 @@ signals:
     void sigSwitchChatDiaLog();
     // 搜索联系人
     void sigUserSearch(std::shared_ptr<SearchInfo> info);
+    // 对方申请本地，本地同意后的信号
+    void sigAuthRsp(std::shared_ptr<AuthRsp>);
+    // 本地申请对方好友
+    void sigFriendApply(std::shared_ptr<AddFriendApply>);
+    // 收到对方同意添加的信号
+    void sigAddAuthFriend(std::shared_ptr<AuthInfo>);
 
 private:
     TcpMgr();
