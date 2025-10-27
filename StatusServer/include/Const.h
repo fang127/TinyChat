@@ -47,5 +47,8 @@ enum ErrorCodes
 
 const std::string codePrefix = "code_";
 
+#define USERIPPREFIX "uip_"
 #define USERTOKENPREFIX "utoken_"
+#define IPCOUNTPREFIX "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
 #define LOGIN_COUNT "logincount"

@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(TcpMgr::getInstance_().get(), &TcpMgr::sigSwitchChatDiaLog, this,
             &MainWindow::slotSwitchChat);
 
-    emit TcpMgr::getInstance_() -> sigSwitchChatDiaLog();
+    // emit TcpMgr::getInstance_() -> sigSwitchChatDiaLog();
 }
 
 MainWindow::~MainWindow() { delete ui; }

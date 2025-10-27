@@ -1,9 +1,10 @@
 #include "LogicSystem.h"
+#include "ConfigMgr.h"
 #include "Const.h"
 #include "Defer.h"
 #include "MySQLMgr.h"
 #include "RedisMgr.h"
-#include "StatusGrpcClient.h"
+#include "UserMgr.h"
 
 #include <iostream>
 #include <jsoncpp/json/reader.h>
@@ -65,8 +66,7 @@ void LogicSystem::dealMessage()
                     continue;
                 }
                 // 找到执行
-                it->second(msgNode->session_,
-                           msgNode->recvNode_->msgId_,
+                it->second(msgNode->session_, msgNode->recvNode_->msgId_,
                            msgNode->recvNode_->data_);
                 msgQue_.pop();
             }
@@ -112,7 +112,7 @@ void LogicSystem::loginHandler(std::shared_ptr<CSession> session,
     Json::Value value;
     // Defer类确保函数结束触发session的send函数回包
     Defer defer(
-        [this, &value, &session]() -> void
+        [this, &value, session]() -> void
         {
             std::string returnStr = value.toStyledString();
             session->send(returnStr, MSG_CHAT_LOGIN_RSP);
@@ -136,6 +136,99 @@ void LogicSystem::loginHandler(std::shared_ptr<CSession> session,
     }
 
     value["error"] = ErrorCodes::Success;
+
+    std::string baseKey = USER_BASE_INFO + uid;
+    auto userInfo = std::make_shared<UserInfo>();
+    success = getBaseInfo(baseKey, uid, userInfo);
+    if (success)
+    {
+        value["error"] = ErrorCodes::TokenInvalid;
+        return;
+    }
+
     value["uid"] = uid;
+    value["passwd"] = userInfo->passwd_;
+    value["name"] = userInfo->name_;
+    value["email"] = userInfo->email_;
+    value["nick"] = userInfo->nick_;
+    value["desc"] = userInfo->desc_;
+    value["sex"] = userInfo->sex_;
+    value["icon"] = userInfo->icon_;
     value["token"] = tokenValue;
+
+    // 从mysql获取申请列表
+
+    // 获取好友列表
+
+    // 增加登录的chatServer的数量
+    auto serverName = ConfigMgr::getInstance()["SelfServer"]["Name"];
+    auto result = RedisMgr::getInstance()->hget(LOGIN_COUNT, serverName);
+    int count = 0;
+    if (!result.empty())
+    {
+        count = std::stoi(result);
+    }
+
+    ++count;
+    // 将数量写入到redis
+    auto countStr = std::to_string(count);
+    RedisMgr::getInstance()->hset(LOGIN_COUNT, serverName, countStr);
+
+    // session绑定用户uid
+    session->setUserId(uid);
+    // 为用户设置ip server的名字
+    std::string ipKey = USERIPPREFIX + uidStr;
+    RedisMgr::getInstance()->set(ipKey, serverName);
+    // uid和session绑定，方便以后踢人操作
+    UserMgr::getInstance()->setUserSession(uid, session);
+}
+
+bool LogicSystem::getBaseInfo(const std::string &key,
+                              int uid,
+                              std::shared_ptr<UserInfo> &userInfo)
+{
+    // 先查redis，没查到去查mysql
+    std::string infoStr = "";
+    bool success = RedisMgr::getInstance()->get(key, infoStr);
+    if (success)
+    {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(infoStr, root);
+        userInfo->uid_ = root["uid"].asInt();
+        userInfo->name_ = root["name"].asString();
+        userInfo->passwd_ = root["passwd"].asString();
+        userInfo->email_ = root["email"].asString();
+        userInfo->nick_ = root["nick"].asString();
+        userInfo->desc_ = root["desc"].asString();
+        userInfo->sex_ = root["sex"].asInt();
+        userInfo->icon_ = root["icon"].asString();
+        std::cout << "user login uid is  " << userInfo->uid_ << " name  is "
+                  << userInfo->name_ << " passwd is " << userInfo->passwd_
+                  << " email is " << userInfo->email_ << std::endl;
+    }
+    else
+    {
+        std::shared_ptr<UserInfo> user = nullptr;
+        user = MySQLMgr::getInstance()->getUser(uid);
+        if (user == nullptr)
+        {
+            return false;
+        }
+
+        userInfo = user;
+
+        // 将数据库内容写入redis缓存
+        Json::Value redisRoot;
+        redisRoot["uid"] = uid;
+        redisRoot["passwd"] = userInfo->passwd_;
+        redisRoot["name"] = userInfo->name_;
+        redisRoot["email"] = userInfo->email_;
+        redisRoot["nick"] = userInfo->nick_;
+        redisRoot["desc"] = userInfo->desc_;
+        redisRoot["sex"] = userInfo->sex_;
+        redisRoot["icon"] = userInfo->icon_;
+        RedisMgr::getInstance()->set(key, redisRoot.toStyledString());
+    }
+    return true;
 }

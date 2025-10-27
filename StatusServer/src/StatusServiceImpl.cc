@@ -122,10 +122,37 @@ void StatusServiceImpl::insertToken(int uid, std::string token)
 ChatServer StatusServiceImpl::getChatServer()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-    // 获取第一个服务器
+    // 从redis中获取第一个服务器信息
     auto minServer = servers_.begin()->second;
-    for (const auto &server : servers_)
+    auto countStr = RedisMgr::getInstance()->hget(LOGIN_COUNT, minServer.name_);
+    if (countStr.empty())
     {
+        minServer.count_ = INT_MAX;
+    }
+    else
+    {
+        minServer.count_ = std::stoi(countStr);
+    }
+
+    // 获取其他服务器进行对比，选取连接数最少的
+    for (auto &server : servers_)
+    {
+        if (server.second.name_ == minServer.name_)
+        {
+            continue;
+        }
+        auto countStr =
+            RedisMgr::getInstance()->hget(LOGIN_COUNT, server.second.name_);
+
+        if (countStr.empty())
+        {
+            server.second.count_ = INT_MAX;
+        }
+        else
+        {
+            server.second.count_ = std::stoi(countStr);
+        }
+
         if (server.second.count_ < minServer.count_)
         {
             minServer = server.second;

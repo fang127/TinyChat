@@ -16,6 +16,7 @@ message GetVerifyRsp {
   string code = 3;
 }
 
+// 状态服务获取聊天服务器地址及token
 message GetChatServerReq{
   int32 uid = 1;
 }
@@ -26,7 +27,7 @@ message GetChatServerRsp{
   string port = 3;
   string token = 4;
 }
-
+// 登录请求及响应
 message LoginReq{
   int32 uid = 1;
   string token = 2;
@@ -41,4 +42,81 @@ message LoginRsp{
 service StatusService {
   rpc GetChatServer (GetChatServerReq) returns (GetChatServerRsp) {} // 获取聊天服务器地址
   rpc Login (LoginReq) returns (LoginRsp); // 登录
+}
+// 添加好友请求及响应
+message AddFriendReq {
+	int32  applyUid = 1;
+	string name = 2;
+	string desc = 3;
+	string icon = 4;
+	string nick = 5;
+	int32  sex = 6;
+	int32  touId = 7;
+}
+
+message AddFriendRsp {
+	int32 error = 1;
+	int32 applyUid = 2;
+	int32 touId = 3;
+}
+// 回复好友请求及响应
+message ReplyFriendReq {
+	int32 replyUid = 1;
+	bool  agree = 2;
+	int32 touId = 3;
+}
+
+message ReplyFriendRsp {
+	int32 error = 1;
+	int32 replyUid = 2;
+	int32 touId = 3;
+}
+// 发送聊天消息请求及响应
+message SendChatMsgReq{
+		int32 fromUid = 1;
+		int32 touId = 2;
+		string message = 3;
+}
+
+message SendChatMsgRsp{
+		int32 error = 1;
+		int32 fromUid = 2;
+		int32 touId = 3;
+}
+// 好友验证请求及响应
+message AuthFriendReq{
+	int32 fromUid = 1;
+	int32 touId = 2;
+}
+
+message AuthFriendRsp{
+	int32 error = 1;
+	int32 fromUid = 2;
+	int32 touId = 3;
+}
+// 文字聊天消息请求及响应
+message TextChatMsgReq {
+	int32 fromUid = 1;
+    int32 touId = 2;
+	repeated TextChatData textMsgs = 3;
+}
+
+message TextChatData{
+	string msgid = 1;
+	string msgContent = 2;
+}
+
+message TextChatMsgRsp {
+	int32 error = 1;
+	int32 fromUid = 2;
+	int32 touId = 3; 
+	repeated TextChatData textMsgs = 4;
+}
+
+service ChatService {
+	rpc NotifyAddFriend(AddFriendReq) returns (AddFriendRsp) {}
+	rpc ReplyAddFriend(ReplyFriendReq) returns (ReplyFriendRsp) {}
+	rpc SendChatMsg(SendChatMsgReq) returns (SendChatMsgRsp) {}
+	rpc NotifyAuthFriend(AuthFriendReq) returns (AuthFriendRsp) {}
+	rpc NotifyTextChatMsg(TextChatMsgReq) returns (TextChatMsgRsp){}
 }

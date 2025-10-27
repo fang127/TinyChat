@@ -127,3 +127,6 @@ AsioIOServicePool 就像是服务器的“引擎组”，提供了多个并行�
 - 实现联系人列表
 ### day20
 - 实现好友申请列表，下一步实现分布式服务，搭建添加好友功能
+### day21
+- 实现分布式服务，每一个client登录时，先发送http的post请求到GateServer，GateServer再通过grpc到StatuServer中获取ChatServer，具体的策略是redis中保存着每一个ChatServer当前的连接数，会选择一个连接数少的ChatServer返回给GateServer这个ChatServer的地址和token，GateServer再返回给client，client拿到信息后，发送tcp连接与ChatServer，ChatServer会查询redis中的token是否正确，正确则允许连接，并且该服务器连接数增加1保存到redis
+- 这里需要解决的问题：redis怎么和mysql数据同步，如果redis数据丢失了或者宕机了怎么办，还有一致性的问题
