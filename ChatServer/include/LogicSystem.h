@@ -61,6 +61,9 @@ private:
     void getUserByUid(const std::string &uid, Json::Value &json);
     // 通过name查询用户
     void getUserByName(const std::string &name, Json::Value &json);
+    // 获取好友申请信息
+    bool getFriendApplyInfo(int uid,
+                            std::vector<std::shared_ptr<ApplyInfo>> &list);
 
     std::queue<std::shared_ptr<LogicNode>> msgQue_; // 消息队列
     std::mutex mutex_;                              // 消息队列锁

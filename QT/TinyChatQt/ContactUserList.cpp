@@ -1,6 +1,7 @@
 #include "ContactUserList.h"
 #include "global.h"
 #include "TcpMgr.h"
+#include "UserMgr.h"
 #include "GroupTipItem.h"
 #include <QRandomGenerator>
 #include "ConUserItem.h"
@@ -16,13 +17,13 @@ ContactUserList::ContactUserList(QWidget *parent)
    addContactUserList();
    //连接点击的信号和槽
    connect(this, &QListWidget::itemClicked, this, &ContactUserList::slot_item_clicked);
-//    //链接对端同意认证后通知的信号
-//    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_add_auth_friend,this,
-//            &ContactUserList::slot_add_auth_firend);
+   // 链接对端同意认证后通知的信号
+   connect(TcpMgr::getInstance_().get(), &TcpMgr::sigAddAuthFriend,this,
+            &ContactUserList::slot_add_auth_firend);
 
-//    //链接自己点击同意认证后界面刷新
-//    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_auth_rsp,this,
-//            &ContactUserList::slot_auth_rsp);
+   // 链接自己点击同意认证后界面刷新
+   connect(TcpMgr::getInstance_().get(), &TcpMgr::sigAuthRsp,this,
+            &ContactUserList::slot_auth_rsp);
 }
 
 void ContactUserList::showRedPoint(bool bshow)
@@ -159,4 +160,50 @@ void ContactUserList::slot_item_clicked(QListWidgetItem *item)
        emit sig_switch_friend_info_page();
        return;
    }
+}
+
+void ContactUserList::slot_add_auth_firend(std::shared_ptr<AuthInfo> authInfo)
+{
+    qDebug() << "slot_add_auth_firend";
+    bool isFriend = UserMgr::getInstance_()->checkFriendByUid(authInfo->_uid);
+    if(isFriend)
+    {
+        return;
+    }
+    int randomValue = QRandomGenerator::global()->bounded(100);
+    int str = randomValue % strs.size();
+    int head = randomValue % heads.size();
+
+    auto *conUserWid = new ConUserItem();
+    conUserWid->setInfo(authInfo);
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setSizeHint(conUserWid->sizeHint());
+
+    int index = this->row(_groupitem);
+    this->insertItem(index + 1, item);
+
+    this->setItemWidget(item, conUserWid);
+}
+
+void ContactUserList::slot_auth_rsp(std::shared_ptr<AuthRsp> authRsp)
+{
+    qDebug() << "slot_auth_rsp";
+    bool isFriend = UserMgr::getInstance_()->checkFriendByUid(authRsp->_uid);
+    if(isFriend)
+    {
+        return;
+    }
+    int randomValue = QRandomGenerator::global()->bounded(100);
+    int str = randomValue % strs.size();
+    int head = randomValue % heads.size();
+
+    auto *conUserWid = new ConUserItem();
+    conUserWid->setInfo(authRsp->_uid, authRsp->_name, heads[head]);
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setSizeHint(conUserWid->sizeHint());
+
+    int index = this->row(_groupitem);
+    this->insertItem(index + 1, item);
+
+    this->setItemWidget(item, conUserWid);
 }

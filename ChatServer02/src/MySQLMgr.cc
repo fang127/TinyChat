@@ -42,3 +42,11 @@ std::shared_ptr<UserInfo> MySQLMgr::getUser(const std::string &name)
 {
     return dao_->getUser(name);
 }
+
+bool MySQLMgr::getApplyList(int uid,
+                            std::vector<std::shared_ptr<ApplyInfo>> &list,
+                            int begin,
+                            int limit)
+{
+    return dao_->getApplyList(uid, list, begin, limit);
+}

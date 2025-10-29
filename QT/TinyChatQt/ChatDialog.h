@@ -6,7 +6,7 @@
 #include "UserData.h"
 
 #include <QDialog>
-
+#include <QListWidgetItem>
 namespace Ui
 {
 class ChatDialog;
@@ -32,7 +32,8 @@ private slots:
     void slotSideContact();
     void slotTextChanged(const QString &str);
     void slotApplyFriend(std::shared_ptr<AddFriendApply> apply);
-
+    void slotAddAuthFriend(std::shared_ptr<AuthInfo> authInfo);
+    void slotAuthRsp(std::shared_ptr<AuthRsp> authRsp);
 private:
     void showSearch(bool status = false);
     void addLBGroup(StateWidget *lb);
@@ -44,6 +45,7 @@ private:
     bool loading_;
     QList<StateWidget *> lbList_;
     QWidget *lastWidget_;
+    QMap<int, QListWidgetItem*> chatItemsAddeds_;
 };
 
 #endif // CHATDIALOG_H

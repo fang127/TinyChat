@@ -112,6 +112,9 @@ set(PROJECT_SOURCES
         findfaildialog.h
         findfaildialog.cpp
         findfaildialog.ui
+        authenfriend.h
+        authenfriend.cpp
+        authenfriend.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

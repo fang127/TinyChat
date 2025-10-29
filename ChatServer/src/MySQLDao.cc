@@ -258,10 +258,10 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(int uid)
             userPtr->passwd_ = result->getString("passwd");
             userPtr->email_ = result->getString("email");
             userPtr->name_ = result->getString("name");
-            // userPtr->nick_ = result->getString("nick");
-            // userPtr->desc_ = result->getString("desc");
-            // userPtr->sex_ = result->getInt("sex");
-            // userPtr->icon_ = result->getString("icon");
+            userPtr->nick_ = result->getString("nick");
+            userPtr->desc_ = result->getString("desc");
+            userPtr->sex_ = result->getInt("sex");
+            userPtr->icon_ = result->getString("icon");
             userPtr->uid_ = uid;
             break;
         }
@@ -301,10 +301,10 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(const std::string &name)
             userPtr->passwd_ = result->getString("passwd");
             userPtr->email_ = result->getString("email");
             userPtr->name_ = result->getString("name");
-            // userPtr->nick_ = result->getString("nick");
-            // userPtr->desc_ = result->getString("desc");
-            // userPtr->sex_ = result->getInt("sex");
-            // userPtr->icon_ = result->getString("icon");
+            userPtr->nick_ = result->getString("nick");
+            userPtr->desc_ = result->getString("desc");
+            userPtr->sex_ = result->getInt("sex");
+            userPtr->icon_ = result->getString("icon");
             userPtr->uid_ = result->getInt("uid");
             break;
         }
@@ -317,5 +317,53 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(const std::string &name)
                   << " (MySQL error code: " << e.getErrorCode()
                   << " , SQLState: " << e.getSQLState() << " )" << "\n";
         return nullptr;
+    }
+}
+
+bool MySQLDao::getApplyList(int uid,
+                            std::vector<std::shared_ptr<ApplyInfo>> &list,
+                            int begin,
+                            int limit)
+{
+    auto conn = pool_->getConnection();
+    Defer defer([this, &conn]() { pool_->returnConnection(std::move(conn)); });
+    try
+    {
+        if (conn == nullptr)
+        {
+            return false;
+        }
+        // 准备执行器
+        std::unique_ptr<sql::PreparedStatement> prepareState(
+            conn->connect_->prepareStatement(
+                "SELECT apply.from_uid, apply.status, user.name, "
+                "user.nick, user.sex from friend_apply as apply join user on "
+                "apply.from_uid = user.uid where apply.to_uid = ? "
+                "and apply.id > ? order by apply.id ASC LIMIT ?"));
+        prepareState->setInt(1, uid);   // 将uid替换为你要查询的uid
+        prepareState->setInt(2, begin); // 起始id
+        prepareState->setInt(3, limit); // 偏移量
+        // 执行查询
+        std::unique_ptr<sql::ResultSet> res(prepareState->executeQuery());
+        // 遍历结果集
+        while (res->next())
+        {
+            auto name = res->getString("name");
+            auto uid = res->getInt("from_uid");
+            auto status = res->getInt("status");
+            auto nick = res->getString("nick");
+            auto sex = res->getInt("sex");
+            auto apply_ptr = std::make_shared<ApplyInfo>(uid, name, "", "",
+                                                         nick, sex, status);
+            list.push_back(apply_ptr);
+        }
+        return true;
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << "SQLException: " << e.what()
+                  << " (MySQL error code: " << e.getErrorCode()
+                  << " , SQLState: " << e.getSQLState() << " )" << "\n";
+        return false;
     }
 }

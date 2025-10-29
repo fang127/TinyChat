@@ -8,7 +8,7 @@ ConUserItem::ConUserItem(QWidget *parent) :
     ui->setupUi(this);
     setItemType(ListItemType::CONTACT_USER_ITEM);
     ui->red_point->raise();
-    showRedPoint(true);
+    showRedPoint(false);
 }
 
 ConUserItem::~ConUserItem()

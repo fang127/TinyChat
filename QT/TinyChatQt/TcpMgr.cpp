@@ -166,9 +166,21 @@ void TcpMgr::initHandlers()
                 return;
             }
 
-            UserMgr::getInstance_()->setUid(jsonObj["uid"].toInt());
-            UserMgr::getInstance_()->setName(jsonObj["name"].toString());
+            auto uid = jsonObj["uid"].toInt();
+            auto name = jsonObj["name"].toString();
+            auto nick = jsonObj["nick"].toString();
+            auto icon = jsonObj["icon"].toString();
+            auto sex = jsonObj["sex"].toInt();
+
+            auto userInfo = std::make_shared<UserInfo>(uid, name, nick, icon, sex);
+            UserMgr::getInstance_()->setUserInfo(userInfo);
             UserMgr::getInstance_()->setToken(jsonObj["token"].toString());
+
+            if(jsonObj.contains("apply list"))
+            {
+                UserMgr::getInstance_()->appendApplyList(jsonObj["apply list"].toArray());
+            }
+
             // 发生信号，切换到用户界面
             emit sigSwitchChatDiaLog();
         });
@@ -208,17 +220,13 @@ void TcpMgr::initHandlers()
                 return;
             }
 
-            //            auto searchInfo = std::make_shared<SearchInfo>(
-            //                jsonObj["uid"].toInt(),
-            //                jsonObj["name"].toString(),
-            //                jsonObj["nick"].toString(),
-            //                jsonObj["desc"].toString(),
-            //                jsonObj["sex"].toInt(),
-            //                jsonObj["icon"].toString());
-
             auto searchInfo = std::make_shared<SearchInfo>(
-                jsonObj["uid"].toInt(), jsonObj["name"].toString(), "test",
-                "test", 1, "test");
+                            jsonObj["uid"].toInt(),
+                            jsonObj["name"].toString(),
+                            jsonObj["nick"].toString(),
+                            jsonObj["desc"].toString(),
+                            jsonObj["sex"].toInt(),
+                            jsonObj["icon"].toString());
 
             // 发生信号，通知搜索结果
             emit sigUserSearch(searchInfo);
@@ -296,17 +304,110 @@ void TcpMgr::initHandlers()
 
             int fromUid = jsonObj["applyUid"].toInt();
             QString name = jsonObj["name"].toString();
-//            QString desc = jsonObj["desc"].toString();
-//            QString icon = jsonObj["icon"].toString();
-//            QString nick = jsonObj["nick"].toString();
-//            int sex = jsonObj["sex"].toInt();
+            QString desc = jsonObj["desc"].toString();
+            QString icon = jsonObj["icon"].toString();
+            QString nick = jsonObj["nick"].toString();
+            int sex = jsonObj["sex"].toInt();
 
-//            auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, desc, icon, nick, sex);
+            auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, desc, icon, nick, sex);
 
-            auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, "desc", "icon", "nick", 1);
+            // auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, "desc", "icon", "nick", 1);
             emit sigFriendApply(applyInfo);
 
             qDebug() << "Notify Friend REQ success";
+        });
+
+    handlers_.insert(
+        ID_NOTIFY_AUTH_FRIEND_REQ,
+        [this](const ReqId &id, const int &len, const QByteArray &data)
+        {
+            Q_UNUSED(len);
+            qDebug() << "handle id is " << id << " data is " << data;
+            // 将数据转为QJson
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+            // 检查是否转换成功
+            if (jsonDoc.isNull())
+            {
+                std::cout << "Failed to create QJsonDocument.";
+                return;
+            }
+
+            QJsonObject jsonObj = jsonDoc.object();
+            qDebug() << "data jsonObj is " << jsonObj;
+
+            if (!jsonObj.contains("error"))
+            {
+                int err = ErrorCodes::ERR_JSON;
+                qDebug() << "ID_NOTIFY_AUTH_FRIEND_REQ Failed, err is Json Parse Err: " << err;
+                return;
+            }
+
+            int err = jsonObj["error"].toInt();
+            if (err != ErrorCodes::SUCCESS)
+            {
+                qDebug() << "ID_NOTIFY_AUTH_FRIEND_REQ Failed, err is " << err;
+                return;
+            }
+
+            int fromUid = jsonObj["fromUid"].toInt();
+            QString name = jsonObj["name"].toString();
+            QString icon = jsonObj["icon"].toString();
+            QString nick = jsonObj["nick"].toString();
+            int sex = jsonObj["sex"].toInt();
+
+            auto authInfo = std::make_shared<AuthInfo>(fromUid, name, nick, icon, sex);
+
+            // auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, "desc", "icon", "nick", 1);
+            emit sigAddAuthFriend(authInfo);
+
+            qDebug() << "ID_NOTIFY_AUTH_FRIEND_REQ success";
+        });
+
+    handlers_.insert(
+        ID_AUTH_FRIEND_RSP,
+        [this](const ReqId &id, const int &len, const QByteArray &data)
+        {
+            Q_UNUSED(len);
+            qDebug() << "handle id is " << id << " data is " << data;
+            // 将数据转为QJson
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+            // 检查是否转换成功
+            if (jsonDoc.isNull())
+            {
+                std::cout << "Failed to create QJsonDocument.";
+                return;
+            }
+
+            QJsonObject jsonObj = jsonDoc.object();
+            qDebug() << "data jsonObj is " << jsonObj;
+
+            if (!jsonObj.contains("error"))
+            {
+                int err = ErrorCodes::ERR_JSON;
+                qDebug() << "ID_AUTH_FRIEND_RSP Failed, err is Json Parse Err: " << err;
+                return;
+            }
+
+            int err = jsonObj["error"].toInt();
+            if (err != ErrorCodes::SUCCESS)
+            {
+                qDebug() << "ID_AUTH_FRIEND_RSP Failed, err is " << err;
+                return;
+            }
+
+            QString name = jsonObj["name"].toString();
+            QString icon = jsonObj["icon"].toString();
+            QString nick = jsonObj["nick"].toString();
+            int sex = jsonObj["sex"].toInt();
+            auto uid = jsonObj["uid"].toInt();
+            auto rsp = std::make_shared<AuthRsp>(uid, name, nick, icon, sex);
+
+            // auto applyInfo = std::make_shared<AddFriendApply>(fromUid, name, "desc", "icon", "nick", 1);
+            emit sigAuthRsp(rsp);
+
+            qDebug() << "ID_AUTH_FRIEND_RSP success";
         });
 }
 

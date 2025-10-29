@@ -27,14 +27,21 @@ public:
     QString getName();
 
     std::vector<std::shared_ptr<ApplyInfo>> getApplyList();
-
+    bool alreadyApply(int apply);
+    void addApplyList(std::shared_ptr<ApplyInfo> apply);
+    void setUserInfo(std::shared_ptr<UserInfo> userInfo);
+    void appendApplyList(QJsonArray array);
+    bool checkFriendByUid(int uid);
+    void addFriend(std::shared_ptr<AuthRsp> authRsp);
+    void addFriend(std::shared_ptr<AuthInfo> authInfo);
+    std::shared_ptr<FriendInfo> getFriendByUid(int uid);
 private:
     UserMgr() = default;
 
-    QString name_;  // 用户名
     QString token_; // token
-    int uid_;       // uid
-    std::vector<std::shared_ptr<ApplyInfo>> applyList_;
+    std::vector<std::shared_ptr<ApplyInfo>> applyList_; // 已有的申请列表
+    std::shared_ptr<UserInfo> userInfo_; // self info
+    QMap<int, std::shared_ptr<FriendInfo>> friendMap_; // was added friend
 };
 
 #endif // USERMGR_H

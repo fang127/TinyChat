@@ -29,6 +29,11 @@ public:
     // 获取用户信息
     std::shared_ptr<UserInfo> getUser(int uid);
     std::shared_ptr<UserInfo> getUser(const std::string &name);
+    // 获取好友申请列表
+    bool getApplyList(int uid,
+                      std::vector<std::shared_ptr<ApplyInfo>> &list,
+                      int begin,
+                      int limit = 10);
 
 private:
     std::unique_ptr<MySQLPool> pool_;

@@ -166,9 +166,26 @@ void LogicSystem::loginHandler(std::shared_ptr<CSession> session,
     value["token"] = tokenValue;
 
     // 从mysql获取申请列表
+    std::vector<std::shared_ptr<ApplyInfo>> applyList;
+    success = getFriendApplyInfo(uid, applyList);
+    if (success)
+    {
+        for (auto &apply : applyList)
+        {
+            Json::Value obj;
+            obj["name"] = apply->name_;
+            obj["uid"] = apply->uid_;
+            obj["nick"] = apply->nick_;
+            obj["sex"] = apply->sex_;
+            obj["status"] = apply->status_;
 
+            obj["icon"] = apply->icon_;
+            obj["desc"] = apply->desc_;
+            value["apply list"].append(obj);
+        }
+    }
     // 获取好友列表
-
+    // add code ...
     // 增加登录的chatServer的数量
     auto serverName = ConfigMgr::getInstance()["SelfServer"]["Name"];
     auto result = RedisMgr::getInstance()->hget(LOGIN_COUNT, serverName);
@@ -208,10 +225,10 @@ bool LogicSystem::getBaseInfo(const std::string &key,
         userInfo->name_ = root["name"].asString();
         userInfo->passwd_ = root["passwd"].asString();
         userInfo->email_ = root["email"].asString();
-        // userInfo->nick_ = root["nick"].asString();
-        // userInfo->desc_ = root["desc"].asString();
-        // userInfo->sex_ = root["sex"].asInt();
-        // userInfo->icon_ = root["icon"].asString();
+        userInfo->nick_ = root["nick"].asString();
+        userInfo->desc_ = root["desc"].asString();
+        userInfo->sex_ = root["sex"].asInt();
+        userInfo->icon_ = root["icon"].asString();
         std::cout << "user login uid is  " << userInfo->uid_ << " name  is "
                   << userInfo->name_ << " passwd is " << userInfo->passwd_
                   << " email is " << userInfo->email_ << std::endl;
@@ -233,10 +250,10 @@ bool LogicSystem::getBaseInfo(const std::string &key,
         redisRoot["passwd"] = userInfo->passwd_;
         redisRoot["name"] = userInfo->name_;
         redisRoot["email"] = userInfo->email_;
-        // redisRoot["nick"] = userInfo->nick_;
-        // redisRoot["desc"] = userInfo->desc_;
-        // redisRoot["sex"] = userInfo->sex_;
-        // redisRoot["icon"] = userInfo->icon_;
+        redisRoot["nick"] = userInfo->nick_;
+        redisRoot["desc"] = userInfo->desc_;
+        redisRoot["sex"] = userInfo->sex_;
+        redisRoot["icon"] = userInfo->icon_;
         RedisMgr::getInstance()->set(key, redisRoot.toStyledString());
     }
     return true;
@@ -325,7 +342,7 @@ void LogicSystem::addFriendApply(std::shared_ptr<CSession> session,
             response["error"] = ErrorCodes::Success;
             response["applyUid"] = uid;
             response["name"] = applyName;
-            // response["desc"] = "";
+            response["desc"] = "";
             std::string data = response.toStyledString();
             session->send(data, ID_NOTIFY_ADD_FRIEND_REQ);
         }
@@ -343,13 +360,13 @@ void LogicSystem::addFriendApply(std::shared_ptr<CSession> session,
     request.set_applyuid(uid);
     request.set_touid(toUid);
     request.set_name(applyName);
-    // request.set_desc("");
-    // if (success)
-    // {
-    //     request.set_icon(applyInfo->icon_);
-    //     request.set_sex(applyInfo->sex_);
-    //     request.set_nick(applyInfo->nick_);
-    // }
+    request.set_desc("");
+    if (success)
+    {
+        request.set_icon(applyInfo->icon_);
+        request.set_sex(applyInfo->sex_);
+        request.set_nick(applyInfo->nick_);
+    }
 
     ChatGrpcClient::getInstance()->notifyAddFriend(peerName, request);
 }
@@ -385,10 +402,10 @@ void LogicSystem::getUserByUid(const std::string &uid, Json::Value &json)
         json["name"] = root["name"].asString();
         json["passwd"] = root["passwd"].asString();
         json["email"] = root["email"].asString();
-        // json["nick"] = root["nick"].asString();
-        // json["desc"] = root["desc"].asString();
-        // json["sex"] = root["sex"].asInt();
-        // json["icon"] = root["icon"].asString();
+        json["nick"] = root["nick"].asString();
+        json["desc"] = root["desc"].asString();
+        json["sex"] = root["sex"].asInt();
+        json["icon"] = root["icon"].asString();
 
         return;
     }
@@ -407,10 +424,10 @@ void LogicSystem::getUserByUid(const std::string &uid, Json::Value &json)
     root["name"] = userInfo->name_;
     root["passwd"] = userInfo->passwd_;
     root["email"] = userInfo->email_;
-    // root["nick"] = userInfo->nick_;
-    // root["desc"] = userInfo->desc_;
-    // root["sex"] = userInfo->sex_;
-    // root["icon"] = userInfo->icon_;
+    root["nick"] = userInfo->nick_;
+    root["desc"] = userInfo->desc_;
+    root["sex"] = userInfo->sex_;
+    root["icon"] = userInfo->icon_;
 
     RedisMgr::getInstance()->set(key, root.toStyledString());
 
@@ -419,10 +436,10 @@ void LogicSystem::getUserByUid(const std::string &uid, Json::Value &json)
     json["name"] = userInfo->name_;
     json["passwd"] = userInfo->passwd_;
     json["email"] = userInfo->email_;
-    // json["nick"] = userInfo->nick_;
-    // json["desc"] = userInfo->desc_;
-    // json["sex"] = userInfo->sex_;
-    // json["icon"] = userInfo->icon_;
+    json["nick"] = userInfo->nick_;
+    json["desc"] = userInfo->desc_;
+    json["sex"] = userInfo->sex_;
+    json["icon"] = userInfo->icon_;
 }
 
 void LogicSystem::getUserByName(const std::string &name, Json::Value &json)
@@ -443,10 +460,10 @@ void LogicSystem::getUserByName(const std::string &name, Json::Value &json)
         json["name"] = root["name"].asString();
         json["passwd"] = root["passwd"].asString();
         json["email"] = root["email"].asString();
-        // json["nick"] = root["nick"].asString();
-        // json["desc"] = root["desc"].asString();
-        // json["sex"] = root["sex"].asInt();
-        // json["icon"] = root["icon"].asString();
+        json["nick"] = root["nick"].asString();
+        json["desc"] = root["desc"].asString();
+        json["sex"] = root["sex"].asInt();
+        json["icon"] = root["icon"].asString();
 
         return;
     }
@@ -465,10 +482,10 @@ void LogicSystem::getUserByName(const std::string &name, Json::Value &json)
     root["name"] = userInfo->name_;
     root["passwd"] = userInfo->passwd_;
     root["email"] = userInfo->email_;
-    // root["nick"] = userInfo->nick_;
-    // root["desc"] = userInfo->desc_;
-    // root["sex"] = userInfo->sex_;
-    // root["icon"] = userInfo->icon_;
+    root["nick"] = userInfo->nick_;
+    root["desc"] = userInfo->desc_;
+    root["sex"] = userInfo->sex_;
+    root["icon"] = userInfo->icon_;
 
     RedisMgr::getInstance()->set(key, root.toStyledString());
 
@@ -477,8 +494,16 @@ void LogicSystem::getUserByName(const std::string &name, Json::Value &json)
     json["name"] = userInfo->name_;
     json["passwd"] = userInfo->passwd_;
     json["email"] = userInfo->email_;
-    // json["nick"] = userInfo->nick_;
-    // json["desc"] = userInfo->desc_;
-    // json["sex"] = userInfo->sex_;
-    // json["icon"] = userInfo->icon_;
+    json["nick"] = userInfo->nick_;
+    json["desc"] = userInfo->desc_;
+    json["sex"] = userInfo->sex_;
+    json["icon"] = userInfo->icon_;
+}
+
+bool LogicSystem::getFriendApplyInfo(
+    int uid,
+    std::vector<std::shared_ptr<ApplyInfo>> &list)
+{
+    // 最多返回10条
+    return MySQLMgr::getInstance()->getApplyList(uid, list, 0, 10);
 }

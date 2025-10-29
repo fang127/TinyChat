@@ -35,10 +35,10 @@ ChatServiceImpl::NotifyAddFriend(grpc::ServerContext *context,
     value["error"] = ErrorCodes::Success;
     value["applyUid"] = request->applyuid();
     value["name"] = request->name();
-    // value["desc"] = request->desc();
-    // value["icon"] = request->icon();
-    // value["sex"] = request->sex();
-    // value["nick"] = request->nick();
+    value["desc"] = request->desc();
+    value["icon"] = request->icon();
+    value["sex"] = request->sex();
+    value["nick"] = request->nick();
 
     std::string data = value.toStyledString();
     std::cout << __func__ << __FILE__ << std::endl;

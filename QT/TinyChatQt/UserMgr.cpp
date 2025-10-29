@@ -1,22 +1,95 @@
 #include "UserMgr.h"
 
-void UserMgr::setName(const QString &name) { name_ = name; }
+void UserMgr::setName(const QString &name) { userInfo_->_name = name; }
 
-void UserMgr::setUid(int uid) { uid_ = uid; }
+void UserMgr::setUid(int uid) { userInfo_->_uid = uid; }
 
 void UserMgr::setToken(const QString &token) { token_ = token; }
 
 int UserMgr::getuid()
 {
-    return uid_;
+    return userInfo_->_uid;
 }
 
 QString UserMgr::getName()
 {
-    return name_;
+    return userInfo_->_name;
 }
 
 std::vector<std::shared_ptr<ApplyInfo> > UserMgr::getApplyList()
 {
     return applyList_;
+}
+
+bool UserMgr::alreadyApply(int uid)
+{
+    for(auto &apply : applyList_)
+    {
+        if(apply->_uid == uid)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void UserMgr::addApplyList(std::shared_ptr<ApplyInfo> apply)
+{
+    applyList_.push_back(apply);
+}
+
+void UserMgr::setUserInfo(std::shared_ptr<UserInfo> userInfo)
+{
+    userInfo_ = userInfo;
+}
+
+void UserMgr::appendApplyList(QJsonArray array)
+{
+    qDebug() << "appendApplyList";
+    for(const QJsonValue &value : array)
+    {
+        qDebug() << "appendApplyList......";
+        auto name = value["name"].toString();
+        auto desc = value["desc"].toString();
+        auto icon = value["icon"].toString();
+        auto nick = value["nick"].toString();
+        auto sex = value["sex"].toInt();
+        auto uid = value["uid"].toInt();
+        auto status = value["status"].toInt();
+        auto info = std::make_shared<ApplyInfo>(uid, name, desc, icon, nick, sex, status);
+        applyList_.push_back(info);
+    }
+}
+
+bool UserMgr::checkFriendByUid(int uid)
+{
+    auto it = friendMap_.find(uid);
+    if(it == friendMap_.end())
+    {
+        return false;
+    }
+    return true;
+}
+
+void UserMgr::addFriend(std::shared_ptr<AuthRsp> authRsp)
+{
+    auto friendInfo = std::make_shared<FriendInfo>(authRsp);
+    friendMap_[friendInfo->_uid] = friendInfo;
+}
+
+void UserMgr::addFriend(std::shared_ptr<AuthInfo> authInfo)
+{
+    auto friendInfo = std::make_shared<FriendInfo>(authInfo);
+    friendMap_[friendInfo->_uid] = friendInfo;
+}
+
+std::shared_ptr<FriendInfo> UserMgr::getFriendByUid(int uid)
+{
+    auto it = friendMap_.find(uid);
+    if(it == friendMap_.end())
+    {
+        return nullptr;
+    }
+    return *it;
 }
