@@ -9,6 +9,7 @@
 #include <boost/asio.hpp>
 #include <condition_variable>
 #include <functional>
+#include <jsoncpp/json/value.h>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -41,10 +42,25 @@ private:
     void loginHandler(std::shared_ptr<CSession> session,
                       const short &msgId,
                       const std::string &msgData);
+    // 搜索好友回包
+    void searchUserInfo(std::shared_ptr<CSession> session,
+                        const short &msgId,
+                        const std::string &msgData);
+    // 添加好友消息的回包
+    void addFriendApply(std::shared_ptr<CSession> session,
+                        const short &msgId,
+                        const std::string &msgData);
+
     // 获取用户基本信息
     bool getBaseInfo(const std::string &key,
                      int uid,
                      std::shared_ptr<UserInfo> &userInfo);
+    // 判断是否全是数字
+    bool isPureDigit(const std::string &uidStr);
+    // 通过uid查询用户
+    void getUserByUid(const std::string &uid, Json::Value &json);
+    // 通过name查询用户
+    void getUserByName(const std::string &name, Json::Value &json);
 
     std::queue<std::shared_ptr<LogicNode>> msgQue_; // 消息队列
     std::mutex mutex_;                              // 消息队列锁

@@ -4,7 +4,7 @@
 #include <QDir>
 
 FindSuccessDialog::FindSuccessDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::FindSuccessDialog)
+    : QDialog(parent), ui(new Ui::FindSuccessDialog), parent_(parent)
 {
     ui->setupUi(this);
     // 设置对话框标题

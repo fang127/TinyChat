@@ -25,6 +25,7 @@ public:
     bool checkPasswd(const std::string &name,
                      const std::string &passwd,
                      UserInfo &userInfo);
+    bool addFriendApply(const int &uid, const int &toUid);
     // 获取用户信息
     std::shared_ptr<UserInfo> getUser(int uid);
     std::shared_ptr<UserInfo> getUser(const std::string &name);

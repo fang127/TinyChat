@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Const.h"
 #include "RedisConnPool.h"
+#include "Singleton.h"
+
+#include <memory>
 
 class RedisMgr : public Singleton<RedisMgr>,
                  public std::enable_shared_from_this<RedisMgr>
@@ -25,6 +27,7 @@ public:
               const char *hvalue,
               size_t hvaluelen);
     std::string hget(const std::string &key, const std::string &hkey);
+    bool hdel(const std::string &key, const std::string &field);
     bool del(const std::string &key);
     bool existsKey(const std::string &key);
     void close();

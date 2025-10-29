@@ -194,6 +194,45 @@ bool MySQLDao::checkPasswd(const std::string &email,
     }
 }
 
+bool MySQLDao::addFriendApply(const int &uid, const int &toUid)
+{
+    auto conn = pool_->getConnection();
+    Defer defer([this, &conn]() { pool_->returnConnection(std::move(conn)); });
+
+    try
+    {
+        if (conn == nullptr)
+        {
+            return false;
+        }
+
+        std::unique_ptr<sql::PreparedStatement> prepareState(
+            conn->connect_->prepareStatement(
+                "INSERT INTO friend_apply (from_uid, to_uid) VALUES (?, ?)"
+                "ON DUPLICATE KEY UPDATE from_uid = from_uid, to_uid = "
+                "to_uid"));
+        prepareState->setInt(1, uid);
+        prepareState->setInt(2, toUid);
+
+        int rowAffected = prepareState->executeUpdate();
+        if (rowAffected < 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << "SQLException: " << e.what()
+                  << " (MySQL error code: " << e.getErrorCode()
+                  << " , SQLState: " << e.getSQLState() << " )" << "\n";
+        return false;
+    }
+
+    return true;
+}
+
 std::shared_ptr<UserInfo> MySQLDao::getUser(int uid)
 {
     auto conn = pool_->getConnection();
@@ -219,10 +258,10 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(int uid)
             userPtr->passwd_ = result->getString("passwd");
             userPtr->email_ = result->getString("email");
             userPtr->name_ = result->getString("name");
-            userPtr->nick_ = result->getString("nick");
-            userPtr->desc_ = result->getString("desc");
-            userPtr->sex_ = result->getInt("sex");
-            userPtr->icon_ = result->getString("icon");
+            // userPtr->nick_ = result->getString("nick");
+            // userPtr->desc_ = result->getString("desc");
+            // userPtr->sex_ = result->getInt("sex");
+            // userPtr->icon_ = result->getString("icon");
             userPtr->uid_ = uid;
             break;
         }
@@ -250,7 +289,7 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(const std::string &name)
         // 准备执行器
         std::unique_ptr<sql::PreparedStatement> prepareState(
             conn->connect_->prepareStatement(
-                "SELECT * FROM user WHERE uid = ?"));
+                "SELECT * FROM user WHERE name = ?"));
         prepareState->setString(1, name);
         // 执行
         std::unique_ptr<sql::ResultSet> result(prepareState->executeQuery());
@@ -262,13 +301,14 @@ std::shared_ptr<UserInfo> MySQLDao::getUser(const std::string &name)
             userPtr->passwd_ = result->getString("passwd");
             userPtr->email_ = result->getString("email");
             userPtr->name_ = result->getString("name");
-            userPtr->nick_ = result->getString("nick");
-            userPtr->desc_ = result->getString("desc");
-            userPtr->sex_ = result->getInt("sex");
-            userPtr->icon_ = result->getString("icon");
+            // userPtr->nick_ = result->getString("nick");
+            // userPtr->desc_ = result->getString("desc");
+            // userPtr->sex_ = result->getInt("sex");
+            // userPtr->icon_ = result->getString("icon");
             userPtr->uid_ = result->getInt("uid");
             break;
         }
+
         return userPtr;
     }
     catch (const sql::SQLException &e)

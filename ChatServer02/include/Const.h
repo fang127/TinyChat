@@ -18,11 +18,16 @@ enum ErrorCodes
     UidInvalid = 1011,     // uid无效
 };
 
-#define codePrefix = "code_";
+#define codePrefix "code_";
 #define USERIPPREFIX "uip_"
 #define USERTOKENPREFIX "utoken_"
-#define LOGIN_COUNT "logincount"
+#define IPCOUNTPREFIX "ipcount_"
 #define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT "logincount"
+#define NAME_INFO "nameinfo_"
+#define LOCK_PREFIX "lock_"
+#define USER_SESSION_PREFIX "usession_"
+#define LOCK_COUNT "lockcount"
 
 // 头部总长度
 #define HEAD_TOTAL_LEN 4

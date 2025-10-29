@@ -109,6 +109,9 @@ set(PROJECT_SOURCES
         ApplyFriendItem.ui
         ApplyFriendList.h
         ApplyFriendList.cpp
+        findfaildialog.h
+        findfaildialog.cpp
+        findfaildialog.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

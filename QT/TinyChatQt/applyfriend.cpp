@@ -7,6 +7,8 @@
 #include "TcpMgr.h"
 #include "UserMgr.h"
 #include "ui_applyfriend.h"
+
+#include <QJsonDocument>
 #include <QScrollBar>
 ApplyFriend::ApplyFriend(QWidget *parent)
     : QDialog(parent), ui(new Ui::ApplyFriend), _label_point(2, 6)
@@ -16,9 +18,9 @@ ApplyFriend::ApplyFriend(QWidget *parent)
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     this->setObjectName("ApplyFriend");
     this->setModal(true);
-    ui->name_ed->setPlaceholderText(tr("恋恋风辰"));
+    ui->name_ed->setPlaceholderText(tr("happy"));
     ui->lb_ed->setPlaceholderText("搜索、添加标签");
-    ui->back_ed->setPlaceholderText("燃烧的胸毛");
+    ui->back_ed->setPlaceholderText("备注");
 
     ui->lb_ed->setMaxLength(21);
     ui->lb_ed->move(2, 2);
@@ -530,6 +532,36 @@ void ApplyFriend::SlotAddFirendLabelByClickTip(QString text)
 void ApplyFriend::SlotApplySure()
 {
     qDebug() << "Slot Apply Sure called";
+    // this->hide();
+    // deleteLater();
+    // 发送请求逻辑
+    // 构建tcp报文，获取自己的信息
+    QJsonObject jsonObj;
+    auto uid = UserMgr::getInstance_()->getuid();
+    jsonObj["uid"] = uid;
+    auto name = ui->name_ed->text();
+    if (name.isEmpty())
+    {
+        name = ui->name_ed->placeholderText();
+    }
+
+    jsonObj["applyName"] = name;
+    auto backName = ui->back_ed->text();
+    if (backName.isEmpty())
+    {
+        backName = ui->back_ed->placeholderText();
+    }
+
+    jsonObj["backName"] = backName;
+
+    jsonObj["toUid"] = _si->uid_;
+
+    QJsonDocument doc(jsonObj);
+    QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
+
+    // 发送tcp给chatServer
+    emit TcpMgr::getInstance_()
+        -> sigSendData(ReqId::ID_ADD_FRIEND_REQ, jsonData);
     this->hide();
     deleteLater();
 }

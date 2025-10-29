@@ -100,6 +100,9 @@ ChatDialog::ChatDialog(QWidget *parent)
     this->installEventFilter(this); // 按照事件过滤器
     // 设置聊天label选中状态
     ui->sideChatLabel->setSelected(true);
+
+    // 为searchList设置searchEdit
+    ui->chatSearchList->setSearchEdit(ui->chatSearchEdit);
 }
 
 ChatDialog::~ChatDialog() { delete ui; }

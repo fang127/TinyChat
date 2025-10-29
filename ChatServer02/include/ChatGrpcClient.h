@@ -44,7 +44,7 @@ class ChatGrpcClient : public Singleton<ChatGrpcClient>
     friend class Singleton<ChatGrpcClient>;
 
 public:
-    ~ChatGrpcClient();
+    ~ChatGrpcClient() = default;
     // 通知对方加好友
     message::AddFriendRsp notifyAddFriend(std::string server_ip,
                                           const message::AddFriendReq &req);

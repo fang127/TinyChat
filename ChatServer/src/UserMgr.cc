@@ -11,7 +11,7 @@ std::shared_ptr<CSession> UserMgr::getSession(int uid)
 {
     std::lock_guard<std::mutex> lock(sessionMutex);
     auto it = uidToSession.find(uid);
-    if (it != uidToSession.end())
+    if (it == uidToSession.end())
     {
         return nullptr;
     }

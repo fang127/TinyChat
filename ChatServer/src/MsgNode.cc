@@ -14,7 +14,7 @@ MsgNode::MsgNode(short maxlen)
 MsgNode::~MsgNode()
 {
     std::cout << "MsgNode destruct" << std::endl;
-    delete data_;
+    delete[] data_;
 }
 
 void MsgNode::clear()
@@ -28,7 +28,7 @@ RecvNode::RecvNode(short maxlen, short msgId) : MsgNode(maxlen), msgId_(msgId)
 }
 
 SendNode::SendNode(const char *msg, short maxlen, short msgId)
-    : MsgNode(maxlen), msgId_(msgId)
+    : MsgNode(maxlen + HEAD_TOTAL_LEN), msgId_(msgId)
 {
     // 消息 = id + 消息体长度 + 消息体内容
     // 主机字节序转为网络字节序
@@ -38,6 +38,7 @@ SendNode::SendNode(const char *msg, short maxlen, short msgId)
     short maxlenHost =
         boost::asio::detail::socket_ops::host_to_network_short(maxlen);
     memcpy(data_ + HEAD_ID_LEN, &maxlenHost, HEAD_DATA_LEN);
+    // 拷贝消息体到头部之后的缓冲区
     memcpy(data_ + HEAD_ID_LEN + HEAD_DATA_LEN, msg, maxlen);
-    totallen_ += HEAD_TOTAL_LEN;
+    // totallen_ 已在构造时设置为 maxlen + HEAD_TOTAL_LEN
 }

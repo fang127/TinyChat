@@ -28,6 +28,11 @@ bool MySQLMgr::checkPasswd(const std::string &name,
     return dao_->checkPasswd(name, passwd, userInfo);
 }
 
+bool MySQLMgr::addFriendApply(const int &uid, const int &toUid)
+{
+    return dao_->addFriendApply(uid, toUid);
+}
+
 std::shared_ptr<UserInfo> MySQLMgr::getUser(int uid)
 {
     return dao_->getUser(uid);

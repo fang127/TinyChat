@@ -129,9 +129,14 @@ void CSession::asyncReadBody(int totalLen)
 
 void CSession::send(char *msg, short maxlen, short msgId) {}
 
+// 使用队列发送消息
+// 1. 解耦合
+// 2. 减少开销
+// 3. 保证发送的顺序
+// 4. 多线程安全
 void CSession::send(const std::string &msg, short msgId)
 {
-    std::cout << msg << std::endl;
+    // std::cout << msg << std::endl;
     std::lock_guard<std::mutex> lock(sendLock_);
     int sendSize = sendQue_.size();
     if (sendSize > MAX_SENDQUE)

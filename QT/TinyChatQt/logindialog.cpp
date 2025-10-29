@@ -296,11 +296,11 @@ void LoginDialog::slotTcpConnFinish(bool bsuccess)
         jsonObj["token"] = token_;
 
         QJsonDocument doc(jsonObj);
-        QString jsonString = doc.toJson(QJsonDocument::Indented);
+        QByteArray jsonData = doc.toJson(QJsonDocument::Indented);
 
         // 发生tcp请求给chatserver
         emit TcpMgr::getInstance_()
-            -> sigSendData(ReqId::ID_CHAT_LOGIN, jsonString);
+            -> sigSendData(ReqId::ID_CHAT_LOGIN, jsonData);
     }
     else
     {

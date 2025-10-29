@@ -8,7 +8,7 @@
 class SearchInfo
 {
 public:
-    SearchInfo(int uid, const QString &name,const QString &nick, const QString &desc, int sex);
+    SearchInfo(int uid, const QString &name,const QString &nick, const QString &desc, int sex, const QString &icon);
     int uid_;
     QString name_;
     QString nick_;

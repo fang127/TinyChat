@@ -24,13 +24,13 @@ public slots:
     // 连接成功
     void slotTcpConnect(ServerInfo serverInfo);
     // 发生数据
-    void slotSendData(ReqId reqId, QString data);
+    void slotSendData(ReqId reqId, QByteArray data);
 
 signals:
     // 连接成功
     void sigConSuccess(bool bsuccess);
     // 发生数据
-    void sigSendData(ReqId reqid, QString data);
+    void sigSendData(ReqId reqid, QByteArray data);
     // 连接关闭
     void sigConnectionClosed();
     // 登录错误信号
