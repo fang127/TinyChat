@@ -50,6 +50,10 @@ private:
     void addFriendApply(std::shared_ptr<CSession> session,
                         const short &msgId,
                         const std::string &msgData);
+    // 好友认证消息回包
+    void authFriendApply(std::shared_ptr<CSession> session,
+                         const short &msgId,
+                         const std::string &msgData);
 
     // 获取用户基本信息
     bool getBaseInfo(const std::string &key,
@@ -64,6 +68,9 @@ private:
     // 获取好友申请信息
     bool getFriendApplyInfo(int uid,
                             std::vector<std::shared_ptr<ApplyInfo>> &list);
+    // 获取好友列表
+    bool getFriendList(int uid,
+                       std::vector<std::shared_ptr<UserInfo>> &friendList);
 
     std::queue<std::shared_ptr<LogicNode>> msgQue_; // 消息队列
     std::mutex mutex_;                              // 消息队列锁

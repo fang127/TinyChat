@@ -31,17 +31,28 @@ public:
     void addApplyList(std::shared_ptr<ApplyInfo> apply);
     void setUserInfo(std::shared_ptr<UserInfo> userInfo);
     void appendApplyList(QJsonArray array);
+    void appendFriendList(QJsonArray array);
     bool checkFriendByUid(int uid);
     void addFriend(std::shared_ptr<AuthRsp> authRsp);
     void addFriend(std::shared_ptr<AuthInfo> authInfo);
     std::shared_ptr<FriendInfo> getFriendByUid(int uid);
+
+    std::vector<std::shared_ptr<FriendInfo>> getChatListPerPage();
+    bool isLoadChatFin();
+    void updateChatLoadedCount();
+    std::vector<std::shared_ptr<FriendInfo>> getConListPerPage();
+    void updateContactLoadedCount();
+    bool isLoadConFin();
 private:
-    UserMgr() = default;
+    UserMgr();
 
     QString token_; // token
     std::vector<std::shared_ptr<ApplyInfo>> applyList_; // 已有的申请列表
     std::shared_ptr<UserInfo> userInfo_; // self info
     QMap<int, std::shared_ptr<FriendInfo>> friendMap_; // was added friend
+    std::vector<std::shared_ptr<FriendInfo>> friendList_; // 好友列表
+    int chatLoaded_; // 加载数量
+    int contactLoaded_; // 联系人数量
 };
 
 #endif // USERMGR_H

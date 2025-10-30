@@ -50,3 +50,21 @@ bool MySQLMgr::getApplyList(int uid,
 {
     return dao_->getApplyList(uid, list, begin, limit);
 }
+
+bool MySQLMgr::authFriendApply(const int &fromUid, const int &toUid)
+{
+    return dao_->authFriendApply(fromUid, toUid);
+}
+
+bool MySQLMgr::addFriend(const int &fromUid,
+                         const int &toUid,
+                         const std::string &backName)
+{
+    return dao_->addFriend(fromUid, toUid, backName);
+}
+
+bool MySQLMgr::getFriendList(int uid,
+                             std::vector<std::shared_ptr<UserInfo>> &friendList)
+{
+    return dao_->getFriendList(uid, friendList);
+}

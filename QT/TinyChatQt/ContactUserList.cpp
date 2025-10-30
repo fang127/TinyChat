@@ -3,9 +3,13 @@
 #include "TcpMgr.h"
 #include "UserMgr.h"
 #include "GroupTipItem.h"
-#include <QRandomGenerator>
 #include "ConUserItem.h"
-ContactUserList::ContactUserList(QWidget *parent)
+
+#include <QRandomGenerator>
+#include <QTimer>
+#include <QCoreApplication>
+
+ContactUserList::ContactUserList(QWidget *parent) : _add_friend_item(nullptr), loadPending_(false)
 {
     Q_UNUSED(parent);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -59,7 +63,25 @@ bool ContactUserList::eventFilter(QObject *watched, QEvent *event)
         int currentValue = scrollBar->value();
         //int pageSize = 10; // 每页加载的联系人数量
 
-        if (maxScrollValue - currentValue <= 0) {
+        if (maxScrollValue - currentValue <= 0)
+        {
+            auto canloaded = UserMgr::getInstance_()->isLoadConFin();
+            if(canloaded)
+            {
+                return true;
+            }
+
+            if(loadPending_)
+            {
+                return true;
+            }
+
+            loadPending_ = true;
+
+            QTimer::singleShot(100, [this](){
+                loadPending_ = false;
+                QCoreApplication::quit(); // 完成后退出应用程序
+                });
             // 滚动到底部，加载新的联系人
             qDebug()<<"load more contact user";
             //发送信号通知聊天界面加载更多聊天内容
@@ -103,8 +125,23 @@ void ContactUserList::addContactUserList()
     this->setItemWidget(_groupitem, groupCon);
     _groupitem->setFlags(_groupitem->flags() & ~Qt::ItemIsSelectable);
 
+    //加载后端发送过来的好友列表
+    auto conList = UserMgr::getInstance_()->getConListPerPage();
+    for(auto & conEle : conList)
+    {
+        auto *conUserWid = new ConUserItem();
+        conUserWid->setInfo(conEle->_uid,conEle->_name, conEle->_icon);
+        QListWidgetItem *item = new QListWidgetItem;
+        //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+        item->setSizeHint(conUserWid->sizeHint());
+        this->addItem(item);
+        this->setItemWidget(item, conUserWid);
+    }
 
-    // 创建QListWidgetItem，并设置自定义的widget
+    UserMgr::getInstance_()->updateContactLoadedCount();
+
+
+    // 测试 创建QListWidgetItem，并设置自定义的widget
     for(int i = 0; i < 13; i++)
     {
         int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数

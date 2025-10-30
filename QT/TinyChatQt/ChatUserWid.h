@@ -21,9 +21,11 @@ public:
 
     void setInfo(std::shared_ptr<UserInfo> userInfo);
 
+    std::shared_ptr<UserInfo> getUserInfo();
+
 private:
     Ui::ChatUserWid *ui;
-    std::shared_ptr<UserInfo> userInfos_;
+    std::shared_ptr<UserInfo> userInfo_;
 };
 
 #endif // CHATUSERWID_H

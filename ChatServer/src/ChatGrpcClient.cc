@@ -94,8 +94,8 @@ ChatGrpcClient::notifyAddFriend(std::string serverName,
     auto it = pool_.find(serverName);
     if (it == pool_.end())
     {
-        std::cout << "ChatGrpcClient: pool for '" << serverName
-                  << "' not found" << std::endl;
+        std::cout << "ChatGrpcClient: pool for '" << serverName << "' not found"
+                  << std::endl;
         return response;
     }
     // 发送grpc
@@ -120,10 +120,39 @@ ChatGrpcClient::notifyAddFriend(std::string serverName,
 }
 
 message::AuthFriendRsp
-ChatGrpcClient::notifyAuthFriend(std::string server_ip,
+ChatGrpcClient::notifyAuthFriend(std::string serverName,
                                  const message::AuthFriendReq &req)
 {
-    return message::AuthFriendRsp();
+    message::AuthFriendRsp rsp;
+    rsp.set_error(ErrorCodes::Success);
+
+    Defer defer(
+        [&rsp, &req]()
+        {
+            rsp.set_fromuid(req.fromuid());
+            rsp.set_touid(req.touid());
+        });
+
+    auto it = pool_.find(serverName);
+    if (it == pool_.end())
+    {
+        return rsp;
+    }
+
+    auto &pool = it->second;
+    grpc::ClientContext context;
+    auto stub = pool->getConnection();
+    grpc::Status status = stub->NotifyAuthFriend(&context, req, &rsp);
+    Defer deferConn([&stub, this, &pool]()
+                    { pool->returnConnection(std::move(stub)); });
+
+    if (!status.ok())
+    {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    return rsp;
 }
 
 bool ChatGrpcClient::getBaseInfo(std::string base_key,
@@ -136,7 +165,7 @@ bool ChatGrpcClient::getBaseInfo(std::string base_key,
 message::TextChatMsgRsp
 ChatGrpcClient::notifyTextChatMsg(std::string server_ip,
                                   const message::TextChatMsgReq &req,
-                                  const Json::Value &rtvalue)
+                                  const Json::Value &value)
 {
     return message::TextChatMsgRsp();
 }
@@ -166,8 +195,8 @@ ChatGrpcClient::ChatGrpcClient()
         std::string name = cfg[word]["Name"];
         std::string host = cfg[word]["Host"];
         std::string port = cfg[word]["RPCPort"];
-        std::cout << "ChatGrpcClient: creating pool for '" << name
-                  << "' -> " << host << ":" << port << std::endl;
+        std::cout << "ChatGrpcClient: creating pool for '" << name << "' -> "
+                  << host << ":" << port << std::endl;
         pool_[name] = std::make_unique<ChatConnPool>(5, host, port);
     }
 }

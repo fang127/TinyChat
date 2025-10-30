@@ -367,3 +367,152 @@ bool MySQLDao::getApplyList(int uid,
         return false;
     }
 }
+
+bool MySQLDao::authFriendApply(const int &fromUid, const int &toUid)
+{
+    auto conn = pool_->getConnection();
+    Defer defer([this, &conn]() { pool_->returnConnection(std::move(conn)); });
+    try
+    {
+        if (conn == nullptr)
+        {
+            return false;
+        }
+        // 准备执行器
+        std::unique_ptr<sql::PreparedStatement> prepareState(
+            conn->connect_->prepareStatement(
+                "UPDATE friend_apply SET status = 1 "
+                "WHERE from_uid = ? AND to_uid = ?"));
+        prepareState->setInt(1, toUid);
+        prepareState->setInt(2, fromUid);
+        // 执行更新
+        int rowAffected = prepareState->executeUpdate();
+        if (rowAffected < 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << "SQLException: " << e.what()
+                  << " (MySQL error code: " << e.getErrorCode()
+                  << " , SQLState: " << e.getSQLState() << " )" << "\n";
+        return false;
+    }
+}
+
+bool MySQLDao::addFriend(const int &fromUid,
+                         const int &toUid,
+                         const std::string &backName)
+{
+    auto conn = pool_->getConnection();
+    Defer defer([this, &conn]() { pool_->returnConnection(std::move(conn)); });
+    try
+    {
+        if (conn == nullptr)
+        {
+            return false;
+        }
+        // 开始事务
+        conn->connect_->setAutoCommit(false);
+        // 准备第一个SQL语句, 插入认证方好友数据
+        std::unique_ptr<sql::PreparedStatement> prepareState(
+            conn->connect_->prepareStatement(
+                "INSERT IGNORE INTO friend(self_id, friend_id, back) "
+                "VALUES (?, ?, ?) "));
+        prepareState->setInt(1, fromUid);
+        prepareState->setInt(2, toUid);
+        prepareState->setString(3, backName);
+
+        // 执行更新
+        int rowAffected = prepareState->executeUpdate();
+        if (rowAffected < 0)
+        {
+            conn->connect_->rollback();
+            return false;
+        }
+
+        // 准备第二个SQL语句，插入申请方好友数据
+        std::unique_ptr<sql::PreparedStatement> prepareState2(
+            conn->connect_->prepareStatement(
+                "INSERT IGNORE INTO friend(self_id, friend_id, back) "
+                "VALUES (?, ?, ?) "));
+        // 反过来的申请时from，验证时to
+        prepareState2->setInt(1, toUid); // from id
+        prepareState2->setInt(2, fromUid);
+        prepareState2->setString(3, "");
+        // 执行更新
+        int rowAffected2 = prepareState2->executeUpdate();
+        if (rowAffected2 < 0)
+        {
+            conn->connect_->rollback();
+            return false;
+        }
+
+        // 提交事务
+        conn->connect_->commit();
+        std::cout << "addfriend insert friends success" << std::endl;
+
+        return true;
+    }
+    catch (const sql::SQLException &e)
+    {
+        // 如果发生错误，回滚事务
+        if (conn)
+        {
+            conn->connect_->rollback();
+        }
+        std::cerr << "SQLException: " << e.what()
+                  << " (MySQL error code: " << e.getErrorCode()
+                  << " , SQLState: " << e.getSQLState() << " )" << "\n";
+        return false;
+    }
+}
+
+bool MySQLDao::getFriendList(int uid,
+                             std::vector<std::shared_ptr<UserInfo>> &friendList)
+{
+    auto conn = pool_->getConnection();
+    Defer defer([this, &conn]() { pool_->returnConnection(std::move(conn)); });
+    try
+    {
+        if (conn == nullptr)
+        {
+            return false;
+        }
+        // 准备执行器
+        std::unique_ptr<sql::PreparedStatement> prepareState(
+            conn->connect_->prepareStatement(
+                "select * from friend where self_id = ? "));
+        prepareState->setInt(1, uid);
+        // 执行查询
+        std::unique_ptr<sql::ResultSet> res(prepareState->executeQuery());
+        // 遍历结果集
+        while (res->next())
+        {
+            auto friendID = res->getInt("friend_id");
+            auto back = res->getString("back");
+            // 再一次查询friend_id对应的信息
+            auto userInfo = getUser(friendID);
+            if (userInfo == nullptr)
+            {
+                continue;
+            }
+
+            userInfo->back_ = userInfo->name_;
+            // std::cout << "uid: " << userInfo->uid_
+            //           << " back: " << userInfo->back_ << std::endl;
+            friendList.push_back(userInfo);
+        }
+        std::cout << "friend list find success" << std::endl;
+        return true;
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << "SQLException: " << e.what()
+                  << " (MySQL error code: " << e.getErrorCode()
+                  << " , SQLState: " << e.getSQLState() << " )" << "\n";
+        return false;
+    }
+}

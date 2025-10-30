@@ -56,7 +56,7 @@ private slots:
     void slotItemClicked(QListWidgetItem *item);
     void slotUserSearch(std::shared_ptr<SearchInfo> si);
 signals:
-
+    void sigJumpChatItem(std::shared_ptr<SearchInfo> si);
 };
 
 #endif // SEARCHLIST_H

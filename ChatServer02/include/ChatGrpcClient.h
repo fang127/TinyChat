@@ -59,7 +59,7 @@ public:
     message::TextChatMsgRsp
     notifyTextChatMsg(std::string server_ip,
                       const message::TextChatMsgReq &req,
-                      const Json::Value &rtvalue);
+                      const Json::Value &value);
 
 private:
     ChatGrpcClient();

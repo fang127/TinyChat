@@ -141,4 +141,6 @@ const std::vector<QString> heads = {":/res/head_1.jpg", ":/res/head_2.jpg",
 const std::vector<QString> names = {"HanMeiMei", "Lily",   "Ben",   "Androw",
                                     "Max",       "Summer", "Candy", "Hunter"};
 
+
+const int CHAT_COUNT_PER_PAGE = 13;
 #endif // GLOBAL_H

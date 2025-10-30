@@ -34,6 +34,15 @@ public:
                       std::vector<std::shared_ptr<ApplyInfo>> &list,
                       int begin,
                       int limit = 10);
+    // 认证好友通知修改数据库friend_apply
+    bool authFriendApply(const int &fromUid, const int &toUid);
+    // 添加好友到数据库apply
+    bool addFriend(const int &fromUid,
+                   const int &toUid,
+                   const std::string &backName);
+    // 获取好友列表
+    bool getFriendList(int uid,
+                       std::vector<std::shared_ptr<UserInfo>> &friendList);
 
 private:
     std::unique_ptr<MySQLPool> pool_;

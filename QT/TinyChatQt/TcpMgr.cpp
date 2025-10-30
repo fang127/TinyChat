@@ -176,9 +176,16 @@ void TcpMgr::initHandlers()
             UserMgr::getInstance_()->setUserInfo(userInfo);
             UserMgr::getInstance_()->setToken(jsonObj["token"].toString());
 
+            // 添加申请列表
             if(jsonObj.contains("apply list"))
             {
                 UserMgr::getInstance_()->appendApplyList(jsonObj["apply list"].toArray());
+            }
+
+            // 添加好友列表
+            if(jsonObj.contains("friend list"))
+            {
+                UserMgr::getInstance_()->appendFriendList(jsonObj["friend list"].toArray());
             }
 
             // 发生信号，切换到用户界面

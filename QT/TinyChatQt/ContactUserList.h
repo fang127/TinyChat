@@ -34,6 +34,7 @@ signals:
 private:
     ConUserItem *_add_friend_item;
     QListWidgetItem *_groupitem;
+    bool loadPending_;
 };
 
 #endif // CONTACTUSERLIST_H

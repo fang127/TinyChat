@@ -4,7 +4,7 @@
 #include "FindSuccessDialog.h"
 #include "TcpMgr.h"
 #include "findfaildialog.h"
-
+#include "UserMgr.h"
 #include <QJsonDocument>
 
 SearchList::SearchList(QWidget *parent)
@@ -140,9 +140,21 @@ void SearchList::slotUserSearch(std::shared_ptr<SearchInfo> si)
     }
     else
     {
+        // 自己添加自己直接返回
+        auto selfUid = UserMgr::getInstance_()->getuid();
+        if(si->uid_ == selfUid)
+        {
+            return;
+        }
         // 1.已经是自己好友 2.未添加
-        findDlg_ = std::make_shared<FindSuccessDialog>(this);
+        bool exist = UserMgr::getInstance_()->checkFriendByUid(si->uid_);
+        if(exist)
+        {
+            emit sigJumpChatItem(si);
+            return;
+        }
 
+        findDlg_ = std::make_shared<FindSuccessDialog>(this);
         std::dynamic_pointer_cast<FindSuccessDialog>(findDlg_)->setSearchInfo(si);
     }
 
