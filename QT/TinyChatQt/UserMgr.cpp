@@ -215,6 +215,34 @@ bool UserMgr::isLoadConFin()
     return false;
 }
 
+std::shared_ptr<UserInfo> UserMgr::getUserInfo()
+{
+    return userInfo_;
+}
+
+std::shared_ptr<FriendInfo> UserMgr::getFriendById(int uid)
+{
+    auto it = friendMap_.find(uid);
+    if(it == friendMap_.end())
+    {
+        return nullptr;
+    }
+
+    return *it;
+}
+
+void UserMgr::appendFriendChatMsg(int friendID, std::vector<std::shared_ptr<TextChatData> > msgs)
+{
+    auto it = friendMap_.find(friendID);
+    if(it == friendMap_.end())
+    {
+        qDebug()<<"append friend uid  " << friendID << " not found";
+        return;
+    }
+
+    it.value()->AppendChatMsgs(msgs);
+}
+
 UserMgr::UserMgr() : userInfo_(nullptr), chatLoaded_(0), contactLoaded_(0)
 {
 }

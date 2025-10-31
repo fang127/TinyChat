@@ -416,6 +416,68 @@ void TcpMgr::initHandlers()
 
             qDebug() << "ID_AUTH_FRIEND_RSP success";
         });
+
+    handlers_.insert(ID_TEXT_CHAT_MSG_RSP, [this](ReqId id, int len, QByteArray data) {
+            Q_UNUSED(len);
+            qDebug() << "handle id is " << id << " data is " << data;
+            // 将QByteArray转换为QJsonDocument
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+            // 检查转换是否成功
+            if (jsonDoc.isNull()) {
+                qDebug() << "Failed to create QJsonDocument.";
+                return;
+            }
+
+            QJsonObject jsonObj = jsonDoc.object();
+
+            if (!jsonObj.contains("error")) {
+                int err = ErrorCodes::ERR_JSON;
+                qDebug() << "Chat Msg Rsp Failed, err is Json Parse Err" << err;
+                return;
+            }
+
+            int err = jsonObj["error"].toInt();
+            if (err != ErrorCodes::SUCCESS) {
+                qDebug() << "Chat Msg Rsp Failed, err is " << err;
+                return;
+            }
+
+            qDebug() << "Receive Text Chat Rsp Success " ;
+            //ui设置送达等标记 todo...
+          });
+
+        handlers_.insert(ID_NOTIFY_TEXT_CHAT_MSG_REQ, [this](ReqId id, int len, QByteArray data) {
+            Q_UNUSED(len);
+            qDebug() << "handle id is " << id << " data is " << data;
+            // 将QByteArray转换为QJsonDocument
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+            // 检查转换是否成功
+            if (jsonDoc.isNull()) {
+                qDebug() << "Failed to create QJsonDocument.";
+                return;
+            }
+
+            QJsonObject jsonObj = jsonDoc.object();
+
+            if (!jsonObj.contains("error")) {
+                int err = ErrorCodes::ERR_JSON;
+                qDebug() << "Notify Chat Msg Failed, err is Json Parse Err" << err;
+                return;
+            }
+
+            int err = jsonObj["error"].toInt();
+            if (err != ErrorCodes::SUCCESS) {
+                qDebug() << "Notify Chat Msg Failed, err is " << err;
+                return;
+            }
+
+            qDebug() << "Receive Text Chat Notify Success " ;
+            auto msgPtr = std::make_shared<TextChatMsg>(jsonObj["fromUid"].toInt(),
+                    jsonObj["toUid"].toInt(),jsonObj["text_array"].toArray());
+            emit sigTextChatMsg(msgPtr);
+          });
 }
 
 // 处理消息

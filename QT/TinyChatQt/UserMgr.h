@@ -43,6 +43,9 @@ public:
     std::vector<std::shared_ptr<FriendInfo>> getConListPerPage();
     void updateContactLoadedCount();
     bool isLoadConFin();
+    std::shared_ptr<UserInfo> getUserInfo();
+    std::shared_ptr<FriendInfo> getFriendById(int uid);
+    void appendFriendChatMsg(int friendID,std::vector<std::shared_ptr<TextChatData> > msgs);
 private:
     UserMgr();
 

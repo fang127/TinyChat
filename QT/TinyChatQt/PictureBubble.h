@@ -9,6 +9,7 @@
 
 class PictureBubble : public BubbleFrame
 {
+    Q_OBJECT
 public:
     PictureBubble(const QPixmap &picture,
                   ChatRole role,

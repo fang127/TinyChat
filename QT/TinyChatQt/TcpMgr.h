@@ -45,6 +45,8 @@ signals:
     void sigFriendApply(std::shared_ptr<AddFriendApply>);
     // 收到对方同意添加的信号
     void sigAddAuthFriend(std::shared_ptr<AuthInfo>);
+    // 收到消息信号
+    void sigTextChatMsg(std::shared_ptr<TextChatMsg> msg);
 
 private:
     TcpMgr();

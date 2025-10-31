@@ -20,9 +20,9 @@ public:
     QSize sizeHint()const override;
 
     void setInfo(std::shared_ptr<UserInfo> userInfo);
-
+    void setInfo(std::shared_ptr<FriendInfo> friendInfo);
     std::shared_ptr<UserInfo> getUserInfo();
-
+    void updateLastMsg(std::vector<std::shared_ptr<TextChatData>> msgs);
 private:
     Ui::ChatUserWid *ui;
     std::shared_ptr<UserInfo> userInfo_;

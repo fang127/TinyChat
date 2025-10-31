@@ -167,7 +167,42 @@ ChatGrpcClient::notifyTextChatMsg(std::string server_ip,
                                   const message::TextChatMsgReq &req,
                                   const Json::Value &value)
 {
-    return message::TextChatMsgRsp();
+    message::TextChatMsgRsp rsp;
+    rsp.set_error(ErrorCodes::Success);
+
+    Defer defer(
+        [&rsp, &req]()
+        {
+            rsp.set_fromuid(req.fromuid());
+            rsp.set_touid(req.touid());
+            for (const auto &textData : req.textmsgs())
+            {
+                message::TextChatData *newMsg = rsp.add_textmsgs();
+                newMsg->set_msgid(textData.msgid());
+                newMsg->set_msgcontent(textData.msgcontent());
+            }
+        });
+
+    auto it = pool_.find(server_ip);
+    if (it == pool_.end())
+    {
+        return rsp;
+    }
+
+    auto &pool = it->second;
+    grpc::ClientContext context;
+    auto stub = pool->getConnection();
+    grpc::Status status = stub->NotifyTextChatMsg(&context, req, &rsp);
+    Defer deferConn([&stub, this, &pool]()
+                    { pool->returnConnection(std::move(stub)); });
+
+    if (!status.ok())
+    {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    return rsp;
 }
 
 ChatGrpcClient::ChatGrpcClient()

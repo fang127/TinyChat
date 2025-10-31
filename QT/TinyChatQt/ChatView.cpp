@@ -60,6 +60,24 @@ void ChatView::prependChatItem(QWidget *item) {}
 
 void ChatView::insertChatItem(QWidget *before, QWidget *item) {}
 
+void ChatView::removeAllItem()
+{
+    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(mpScrollArea->widget()->layout());
+    int count = layout->count();
+    for(int i = 0;i < count - 1; ++i)
+    {
+        QLayoutItem *item = layout->takeAt(0);
+        if(item)
+        {
+            if(QWidget *widget = item->widget())
+            {
+                delete widget;
+            }
+        }
+        delete item;
+    }
+}
+
 bool ChatView::eventFilter(QObject *o, QEvent *e)
 {
     /*if(e->type() == QEvent::Resize && o == )

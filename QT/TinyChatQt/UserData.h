@@ -4,6 +4,7 @@
 #include <QString>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <vector>
 
 class SearchInfo
 {
@@ -160,8 +161,10 @@ struct TextChatData{
 
 struct TextChatMsg{
     TextChatMsg(int fromuid, int touid, QJsonArray arrays):
-        _from_uid(fromuid),_to_uid(touid){
-        for(auto  msg_data : arrays){
+        _from_uid(fromuid),_to_uid(touid)
+    {
+        for(auto  msg_data : arrays)
+        {
             auto msg_obj = msg_data.toObject();
             auto content = msg_obj["content"].toString();
             auto msgid = msg_obj["msgid"].toString();

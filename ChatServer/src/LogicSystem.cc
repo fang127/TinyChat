@@ -35,6 +35,9 @@ void LogicSystem::initCallBack()
     funcCallBacks_[ID_AUTH_FRIEND_REQ] =
         std::bind(&LogicSystem::authFriendApply, this, std::placeholders::_1,
                   std::placeholders::_2, std::placeholders::_3);
+    funcCallBacks_[ID_TEXT_CHAT_MSG_REQ] =
+        std::bind(&LogicSystem::dealChatTextMsg, this, std::placeholders::_1,
+                  std::placeholders::_2, std::placeholders::_3);
 }
 
 void LogicSystem::postMsgToQue(std::shared_ptr<LogicNode> msg)
@@ -487,6 +490,77 @@ void LogicSystem::authFriendApply(std::shared_ptr<CSession> session,
     request.set_touid(toUid);
     // 发送通知
     ChatGrpcClient::getInstance()->notifyAuthFriend(serverName, request);
+}
+
+void LogicSystem::dealChatTextMsg(std::shared_ptr<CSession> session,
+                                  const short &msgId,
+                                  const std::string &msgData)
+{
+    Json::Reader reader;
+    Json::Value root;
+    reader.parse(msgData, root);
+
+    auto uid = root["fromUid"].asInt();
+    auto touid = root["toUid"].asInt();
+
+    const Json::Value arrays = root["text_array"];
+
+    Json::Value value;
+    value["error"] = ErrorCodes::Success;
+    value["text_array"] = arrays;
+    value["fromUid"] = uid;
+    value["toUid"] = touid;
+
+    Defer defer(
+        [this, &value, session]()
+        {
+            std::string data = value.toStyledString();
+            session->send(data, ID_TEXT_CHAT_MSG_RSP);
+        });
+
+    // 查询redis 查找touid对应的server ip
+    auto toUidStr = std::to_string(touid);
+    auto key = USERIPPREFIX + toUidStr;
+    std::string serverName = "";
+    bool success = RedisMgr::getInstance()->get(key, serverName);
+    if (!success)
+    {
+        return;
+    }
+
+    auto &cfg = ConfigMgr::getInstance();
+    auto selfName = cfg["SelfServer"]["Name"];
+    // 直接通知对方有认证通过消息
+    if (serverName == selfName)
+    {
+        auto session = UserMgr::getInstance()->getSession(touid);
+        if (session)
+        {
+            // 在内存中则直接发送通知对方
+            std::string return_str = value.toStyledString();
+            session->send(return_str, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+        }
+
+        return;
+    }
+
+    message::TextChatMsgReq request;
+    request.set_fromuid(uid);
+    request.set_touid(touid);
+    for (const auto &text : arrays)
+    {
+        auto content = text["content"].asString();
+        auto msgID = text["msgID"].asString();
+        std::cout << "content is " << content << std::endl;
+        std::cout << "msgID is " << msgID << std::endl;
+        auto *textMsg = request.add_textmsgs();
+        textMsg->set_msgid(msgID);
+        textMsg->set_msgcontent(content);
+    }
+
+    // 发送通知
+    ChatGrpcClient::getInstance()->notifyTextChatMsg(serverName, request,
+                                                     value);
 }
 
 // 检测是否是数据

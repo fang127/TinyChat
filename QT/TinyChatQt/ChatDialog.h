@@ -36,15 +36,21 @@ private slots:
     void slotAddAuthFriend(std::shared_ptr<AuthInfo> authInfo);
     void slotAuthRsp(std::shared_ptr<AuthRsp> authRsp);
     void slotJumpChatItem(std::shared_ptr<SearchInfo> si);
-
+    void slotFriendInfoPage(std::shared_ptr<UserInfo> userInfo);
+    void slotSwitchApplyFriendPage();
+    void slotJumpChatFromInfoPage(std::shared_ptr<UserInfo> userInfo);
+    void slotItemClicked(QListWidgetItem *item);
+    void slotAppendSendChatMsg(std::shared_ptr<TextChatData> msgData);
+    void slotTextChatMsg(std::shared_ptr<TextChatMsg> msg);
 private:
     void showSearch(bool status = false);
     void addLBGroup(StateWidget *lb);
     void handleGlobalMousePress(QMouseEvent *event);
-    void setSelectChatItem(int uid);
+    void setSelectChatItem(int uid = 0);
     void setSelectChatPage(int uid = 0);
     void loadMoreChatUser(); // 加载更多聊天
     void loadMoreConUser(); // 加载更多联系人
+    void updateChatMsg(std::vector<std::shared_ptr<TextChatData> > msgdata);
     Ui::ChatDialog *ui;
     ChatUIMode mode_;
     ChatUIMode state_;

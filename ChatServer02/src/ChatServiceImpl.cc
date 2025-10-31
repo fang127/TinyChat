@@ -119,6 +119,37 @@ ChatServiceImpl::NotifyTextChatMsg(grpc::ServerContext *context,
                                    const message::TextChatMsgReq *request,
                                    message::TextChatMsgRsp *response)
 {
+    // 查找用户是否在本服务器
+    auto touid = request->touid();
+    auto session = UserMgr::getInstance()->getSession(touid);
+    response->set_error(ErrorCodes::Success);
+
+    // 用户不在内存中则直接返回
+    if (session == nullptr)
+    {
+        return grpc::Status::OK;
+    }
+
+    // 在内存中则直接发送通知对方
+    Json::Value value;
+    value["error"] = ErrorCodes::Success;
+    value["fromUid"] = request->fromuid();
+    value["toUid"] = request->touid();
+
+    // 将聊天数据组织为数组
+    Json::Value textArray;
+    for (auto &msg : request->textmsgs())
+    {
+        Json::Value element;
+        element["content"] = msg.msgcontent();
+        element["msgID"] = msg.msgid();
+        textArray.append(element);
+    }
+    value["text_array"] = textArray;
+
+    std::string data = value.toStyledString();
+
+    session->send(data, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
     return grpc::Status::OK;
 }
 

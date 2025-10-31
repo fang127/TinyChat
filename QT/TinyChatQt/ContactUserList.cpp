@@ -193,8 +193,10 @@ void ContactUserList::slot_item_clicked(QListWidgetItem *item)
    if(itemType == ListItemType::CONTACT_USER_ITEM){
        // 创建对话框，提示用户
        qDebug()<< "contact user item clicked ";
+       auto conItem = qobject_cast<ConUserItem *> (customItem);
+       auto userInfo = conItem->getInfo();
        //跳转到好友申请界面
-       emit sig_switch_friend_info_page();
+       emit sig_switch_friend_info_page(userInfo);
        return;
    }
 }

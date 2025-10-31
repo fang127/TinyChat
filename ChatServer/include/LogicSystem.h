@@ -54,7 +54,10 @@ private:
     void authFriendApply(std::shared_ptr<CSession> session,
                          const short &msgId,
                          const std::string &msgData);
-
+    // 用户发送了消息给对端回包
+    void dealChatTextMsg(std::shared_ptr<CSession> session,
+                         const short &msgId,
+                         const std::string &msgData);
     // 获取用户基本信息
     bool getBaseInfo(const std::string &key,
                      int uid,

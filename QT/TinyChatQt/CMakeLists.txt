@@ -115,6 +115,9 @@ set(PROJECT_SOURCES
         authenfriend.h
         authenfriend.cpp
         authenfriend.ui
+        friendinfopage.h
+        friendinfopage.cpp
+        friendinfopage.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
